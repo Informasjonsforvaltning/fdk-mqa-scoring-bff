@@ -1,0 +1,39 @@
+use actix_web::{get, web, App, HttpServer, Responder};
+use database::connection_pool;
+use deadpool_postgres::{Client, Pool};
+use uuid::Uuid;
+
+use crate::{database::get_graph_by_id, error::Error, score::ScoreGraph};
+
+mod database;
+mod error;
+mod score;
+mod vocab;
+
+#[get("/{id}")]
+async fn get_score(id: web::Path<String>, pool: web::Data<Pool>) -> Result<impl Responder, Error> {
+    let uuid = Uuid::parse_str(id.as_ref()).map_err(|_| Error::InvalidID(id.into_inner()))?;
+
+    let client: Client = pool.get().await?;
+
+    if let Some(graph_string) = get_graph_by_id(&client, uuid).await? {
+        let score = ScoreGraph::parse(graph_string)?.score()?;
+        Ok(web::Json(score))
+    } else {
+        Err(Error::NotFound(uuid))
+    }
+}
+
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    let pool = connection_pool().unwrap();
+
+    HttpServer::new(move || {
+        App::new()
+            .app_data(web::Data::new(pool.clone()))
+            .service(get_score)
+    })
+    .bind(("127.0.0.1", 8080))?
+    .run()
+    .await
+}
