@@ -3,12 +3,28 @@ use database::connection_pool;
 use deadpool_postgres::{Client, Pool};
 use uuid::Uuid;
 
-use crate::{database::get_graph_by_id, error::Error, score::ScoreGraph};
+use crate::{
+    database::{get_graph_by_id, test_connection},
+    error::Error,
+    score::ScoreGraph,
+};
 
 mod database;
 mod error;
 mod score;
 mod vocab;
+
+#[get("/ping")]
+async fn ping(pool: web::Data<Pool>) -> Result<impl Responder, Error> {
+    let client: Client = pool.get().await?;
+    test_connection(&client).await?;
+    Ok("pong")
+}
+
+#[get("/ready")]
+async fn ready() -> Result<impl Responder, Error> {
+    Ok("ok")
+}
 
 #[get("/{id}")]
 async fn get_score(id: web::Path<String>, pool: web::Data<Pool>) -> Result<impl Responder, Error> {
@@ -31,6 +47,8 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(pool.clone()))
+            .service(ping)
+            .service(ready)
             .service(get_score)
     })
     .bind(("127.0.0.1", 8080))?
