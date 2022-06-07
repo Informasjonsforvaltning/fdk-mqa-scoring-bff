@@ -1,4 +1,4 @@
-use actix_web::{get, web, App, HttpServer, Responder};
+use actix_web::{get, middleware::Logger, web, App, HttpServer, Responder};
 use database::connection_pool;
 use deadpool_postgres::{Client, Pool};
 use uuid::Uuid;
@@ -42,10 +42,16 @@ async fn get_score(id: web::Path<String>, pool: web::Data<Pool>) -> Result<impl 
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    tracing_subscriber::fmt()
+        .json()
+        .with_max_level(tracing::Level::INFO)
+        .init();
+
     let pool = connection_pool().unwrap();
 
     HttpServer::new(move || {
         App::new()
+            .wrap(Logger::default())
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
