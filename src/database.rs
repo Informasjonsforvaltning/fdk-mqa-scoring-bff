@@ -25,9 +25,9 @@ pub fn connection_pool() -> Result<Pool, DatabaseError> {
             .parse::<u16>()
             .map_err(|e| DatabaseError::ConfigError("POSTGRES_PORT", e.to_string()))?,
     );
-    cfg.user(var("POSTGRES_USER")?.as_str());
+    cfg.user(var("POSTGRES_USERNAME")?.as_str());
     cfg.password(var("POSTGRES_PASSWORD")?.as_str());
-    cfg.dbname(var("POSTGRES_DATABASE")?.as_str());
+    cfg.dbname(var("POSTGRES_DB_NAME")?.as_str());
 
     let mgr_config = ManagerConfig {
         recycling_method: RecyclingMethod::Fast,
@@ -46,4 +46,12 @@ pub async fn get_graph_by_id(client: &Client, id: Uuid) -> Result<Option<String>
         .await?
         .first()
         .map_or(Ok(None), |row| Ok(row.try_get(0)?))
+}
+
+pub async fn test_connection(client: &Client) -> Result<(), DatabaseError> {
+    let q = "SELECT COUNT(*) from mqa;";
+    let stmt = client.prepare(q).await?;
+
+    client.query(&stmt, &[]).await?;
+    Ok(())
 }

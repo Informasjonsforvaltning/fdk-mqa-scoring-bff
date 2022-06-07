@@ -24,6 +24,7 @@ impl ResponseError for Error {
         use Error::*;
         match self {
             NotFound(_) => HttpResponse::NotFound().json(json!({"message": self.to_string()})),
+            InvalidID(_) => HttpResponse::BadRequest().json(json!({"error": self.to_string()})),
             _ => HttpResponse::InternalServerError().json(json!({"error": self.to_string()})),
         }
     }
