@@ -4,6 +4,7 @@ use oxigraph::{
     sparql::{self, QueryResults, QuerySolution},
     store::{self, StorageError, Store},
 };
+use rweb::Schema;
 use serde::Serialize;
 use thiserror::Error;
 
@@ -39,13 +40,13 @@ impl From<String> for ScoreError {
     }
 }
 
-#[derive(Debug, Serialize, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Schema)]
 pub struct Scores {
     dataset: Score,
     distributions: Vec<Score>,
 }
 
-#[derive(Debug, Serialize, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Schema)]
 pub struct Score {
     name: String,
     dimensions: Vec<DimensionScore>,
@@ -64,7 +65,7 @@ impl Score {
     }
 }
 
-#[derive(Debug, Serialize, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Schema)]
 pub struct DimensionScore {
     name: String,
     metrics: Vec<MetricScore>,
@@ -72,7 +73,7 @@ pub struct DimensionScore {
     max_score: u64,
 }
 
-#[derive(Debug, Serialize, PartialEq)]
+#[derive(Debug, Serialize, PartialEq, Schema)]
 pub struct MetricScore {
     metric: String,
     score: u64,
@@ -255,9 +256,7 @@ fn named_quad_object(result: Result<Quad, StorageError>) -> Result<NamedNode, Sc
 
 #[cfg(test)]
 mod tests {
-    use crate::score::{DimensionScore, MetricScore, Score, Scores};
-
-    use super::ScoreGraph;
+    use crate::scoring::{DimensionScore, MetricScore, Score, ScoreGraph, Scores};
 
     #[test]
     fn score() {

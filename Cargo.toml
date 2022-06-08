@@ -6,7 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = "4.0.1"
 deadpool-postgres = "0.10.2"
 oxigraph = "0.3.2"
 serde = { version ="1.0.137", features = ["derive"] }
@@ -16,3 +15,4 @@ tokio-postgres = "0.7.6"
 uuid = "1.0.0"
 tracing = "0.1"
 tracing-subscriber = "0.2"
+rweb = { version = "0.6", features = ["openapi"] }
