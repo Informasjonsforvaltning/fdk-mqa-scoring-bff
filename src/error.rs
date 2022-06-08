@@ -1,11 +1,13 @@
-use actix_web::{HttpResponse, ResponseError};
-use serde_json::json;
-use thiserror::Error;
+use std::convert::Infallible;
+
+use rweb::{hyper::StatusCode, reject::Reject, reply, Json, Rejection, Reply};
+
+use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{database, score};
+use crate::{database, scoring};
 
-#[derive(Error, Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("score of dataset with FDK ID '{0}' does not exist")]
     NotFound(Uuid),
@@ -14,18 +16,61 @@ pub enum Error {
     #[error(transparent)]
     DatabaseError(#[from] database::DatabaseError),
     #[error(transparent)]
-    ScoreError(#[from] score::ScoreError),
+    ScoreError(#[from] scoring::ScoreError),
     #[error(transparent)]
     PoolError(#[from] deadpool_postgres::PoolError),
 }
 
-impl ResponseError for Error {
-    fn error_response(&self) -> HttpResponse {
+impl Reject for Error {}
+
+#[derive(Default, Serialize)]
+pub struct ErrorReply {
+    message: Option<String>,
+    error: Option<String>,
+    #[serde(skip)]
+    status: StatusCode,
+}
+
+impl ErrorReply {
+    pub fn from(error: &Error) -> Self {
         use Error::*;
-        match self {
-            NotFound(_) => HttpResponse::NotFound().json(json!({"message": self.to_string()})),
-            InvalidID(_) => HttpResponse::BadRequest().json(json!({"error": self.to_string()})),
-            _ => HttpResponse::InternalServerError().json(json!({"error": self.to_string()})),
+        match error {
+            NotFound(_) => ErrorReply {
+                message: Some(error.to_string()),
+                status: StatusCode::NOT_FOUND,
+                ..Default::default()
+            },
+            InvalidID(_) => ErrorReply {
+                error: Some(error.to_string()),
+                status: StatusCode::BAD_REQUEST,
+                ..Default::default()
+            },
+            _ => ErrorReply {
+                error: Some(error.to_string()),
+                status: StatusCode::INTERNAL_SERVER_ERROR,
+                ..Default::default()
+            },
         }
+    }
+
+    pub async fn recover(r: Rejection) -> Result<impl Reply, Infallible> {
+        let error = if let Some(error) = r.find::<Error>() {
+            ErrorReply::from(error)
+        } else if r.is_not_found() {
+            ErrorReply {
+                message: Some("not found".to_string()),
+                status: StatusCode::NOT_FOUND,
+                ..Default::default()
+            }
+        } else {
+            ErrorReply {
+                error: Some("unkown error".to_string()),
+                status: StatusCode::INTERNAL_SERVER_ERROR,
+                ..Default::default()
+            }
+        };
+
+        let status = error.status;
+        Ok(reply::with_status(Json::from(error), status))
     }
 }
