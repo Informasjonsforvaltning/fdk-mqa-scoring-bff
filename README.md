@@ -1,1 +1,1 @@
-# fdk-metadata-scoring-bff
+# fdk-mqa-scoring-bff

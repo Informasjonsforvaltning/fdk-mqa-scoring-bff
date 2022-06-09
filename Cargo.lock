@@ -361,7 +361,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fdk-metadata-scoring-bff"
+name = "fdk-mqa-scoring-bff"
 version = "0.1.0"
 dependencies = [
  "deadpool-postgres",

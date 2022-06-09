@@ -14,7 +14,7 @@ FROM rust:latest
 ENV TZ=Europe/Oslo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-COPY --from=builder /build/target/release/fdk-metadata-scoring-bff /fdk-metadata-scoring-bff
+COPY --from=builder /build/target/release/fdk-mqa-scoring-bff /fdk-mqa-scoring-bff
 
 EXPOSE 8080
-CMD ["/fdk-metadata-scoring-bff"]
+CMD ["/fdk-mqa-scoring-bff"]
