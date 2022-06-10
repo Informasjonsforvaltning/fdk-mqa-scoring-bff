@@ -38,7 +38,7 @@ pub fn connection_pool() -> Result<Pool, DatabaseError> {
 }
 
 pub async fn get_graph_by_id(client: &Client, id: Uuid) -> Result<Option<String>, DatabaseError> {
-    let q = "SELECT CONCAT (score, '\n', vocab) AS graph FROM mqa WHERE id = $1";
+    let q = "SELECT CONCAT (score, '\n', vocab) AS graph FROM graphs WHERE id = $1";
     let stmt = client.prepare(q).await?;
 
     client
@@ -49,7 +49,7 @@ pub async fn get_graph_by_id(client: &Client, id: Uuid) -> Result<Option<String>
 }
 
 pub async fn test_connection(client: &Client) -> Result<(), DatabaseError> {
-    let q = "SELECT COUNT(*) from mqa;";
+    let q = "SELECT COUNT(*) from graphs;";
     let stmt = client.prepare(q).await?;
 
     client.query(&stmt, &[]).await?;
