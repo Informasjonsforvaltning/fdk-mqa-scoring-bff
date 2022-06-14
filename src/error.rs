@@ -28,7 +28,13 @@ impl ResponseError for Error {
             NotFound(_) => HttpResponse::NotFound().json(ErrorReply::message(self)),
             InvalidID(_) => HttpResponse::BadRequest().json(ErrorReply::error(self)),
             Unauthorized(_) => HttpResponse::Unauthorized().json(ErrorReply::error(self)),
-            _ => HttpResponse::InternalServerError().json(ErrorReply::error(self)),
+            _ => {
+                tracing::error!(
+                    error = self.to_string().as_str(),
+                    "error occured when processing request"
+                );
+                HttpResponse::InternalServerError().json(ErrorReply::error(self))
+            }
         }
     }
 }
