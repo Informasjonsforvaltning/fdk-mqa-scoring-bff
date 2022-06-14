@@ -3,8 +3,13 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use actix_web::{get, middleware::Logger, post, web, App, HttpResponse, HttpServer, Responder};
+use std::env;
+
+use actix_web::{
+    get, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
+};
 use database::migrate_database;
+use lazy_static::lazy_static;
 use uuid::Uuid;
 
 use crate::{
@@ -19,6 +24,28 @@ mod error;
 mod models;
 mod schema;
 mod score;
+
+lazy_static! {
+    static ref API_TOKEN: String = env::var("API_TOKEN").unwrap_or_else(|e| {
+        tracing::error!(error = e.to_string().as_str(), "API_TOKEN not found");
+        std::process::exit(1)
+    });
+}
+
+fn validate_api_key(request: HttpRequest) -> Result<(), Error> {
+    let token = request
+        .headers()
+        .get("X-API-KEY")
+        .ok_or(Error::Unauthorized("X-API-KEY header missing".to_string()))?
+        .to_str()
+        .map_err(|_| Error::Unauthorized("invalid api key".to_string()))?;
+
+    if token == API_TOKEN.clone() {
+        Ok(())
+    } else {
+        Err(Error::Unauthorized("Incorrect api key".to_string()))
+    }
+}
 
 #[get("/ping")]
 async fn ping(pool: web::Data<PgPool>) -> Result<impl Responder, Error> {
@@ -68,10 +95,13 @@ async fn get_score_json(
 
 #[post("/api/v1/save/{id}")]
 async fn save(
+    request: HttpRequest,
     id: web::Path<String>,
     body: web::Json<SaveRequest>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
+    validate_api_key(request)?;
+
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
@@ -111,6 +141,9 @@ async fn main() -> std::io::Result<()> {
 
     migrate_database().unwrap();
     let pool = PgPool::new().unwrap();
+
+    // Fail if API_TOKEN missing
+    let _ = API_TOKEN.clone();
 
     HttpServer::new(move || {
         App::new()

@@ -537,6 +537,7 @@ dependencies = [
  "actix-web",
  "diesel",
  "diesel_migrations",
+ "lazy_static",
  "mime",
  "r2d2",
  "serde",
