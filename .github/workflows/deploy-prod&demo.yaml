@@ -17,7 +17,7 @@ jobs:
     name: Build with reusable workflow when merging to main
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
-      app_name: fdk-mqa-scoring-bff
+      app_name: fdk-mqa-scoring-api
       environment: prod
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,7 +28,7 @@ jobs:
     needs: [test,build]
     uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
     with:
-      app_name: fdk-mqa-scoring-bff
+      app_name: fdk-mqa-scoring-api
       environment: prod
       cluster: digdir-fdk-prod
     secrets:
@@ -41,7 +41,7 @@ jobs:
     needs: [deploy]
     uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
     with:
-      app_name: fdk-mqa-scoring-bff
+      app_name: fdk-mqa-scoring-api
       environment: demo
       cluster: digdir-fdk-dev
     secrets:

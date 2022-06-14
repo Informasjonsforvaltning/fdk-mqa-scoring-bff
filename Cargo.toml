@@ -1,18 +1,19 @@
 [package]
-name = "fdk-mqa-scoring-bff"
+name = "fdk-mqa-scoring-api"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-deadpool-postgres = "0.10.2"
-oxigraph = "0.3.2"
+actix-web = "4.1.0"
+diesel = { version = "1.4.8", features = ["postgres", "r2d2"] }
+diesel_migrations = { version = "1.4.0", features = ["postgres"] }
+lazy_static = "1.4.0"
+mime = "0.3.16"
+r2d2 = "0.8.9"
 serde = { version ="1.0.137", features = ["derive"] }
 serde_json = "1.0.81"
+serde_yaml = "0.8.24"
 thiserror = "1.0.31"
-tokio-postgres = "0.7.6"
-uuid = "1.0.0"
-tracing = "0.1"
-tracing-subscriber = "0.2"
-rweb = { version = "0.6", features = ["openapi"] }
+tracing = "0.1.35"
+tracing-subscriber =  { version = "0.3.11", features = ["json"] }
+uuid = "1.1.2"
