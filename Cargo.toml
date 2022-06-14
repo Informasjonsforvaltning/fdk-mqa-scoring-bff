@@ -1,5 +1,5 @@
 [package]
-name = "fdk-mqa-scoring-bff"
+name = "fdk-mqa-scoring-api"
 version = "0.1.0"
 edition = "2021"
 
