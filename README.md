@@ -1,1 +1,1 @@
-# fdk-mqa-scoring-bff
+# fdk-mqa-scoring-api
