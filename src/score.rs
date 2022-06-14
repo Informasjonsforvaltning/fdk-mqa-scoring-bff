@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct SaveRequest {
+pub struct UpdateRequest {
     pub scores: Scores,
     pub graph: String,
     pub publisher_id: String,

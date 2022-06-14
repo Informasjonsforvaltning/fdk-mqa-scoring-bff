@@ -16,7 +16,7 @@ use crate::{
     database::PgPool,
     error::Error,
     models::{Dataset, Dimension},
-    score::SaveRequest,
+    score::UpdateRequest,
 };
 
 mod database;
@@ -59,7 +59,7 @@ async fn ready() -> Result<impl Responder, Error> {
     Ok("ok")
 }
 
-#[get("/api/v1/graph/{id}")]
+#[get("/api/graphs/{id}")]
 async fn get_score_graph(
     id: web::Path<String>,
     pool: web::Data<PgPool>,
@@ -76,7 +76,7 @@ async fn get_score_graph(
         .message_body(graph))
 }
 
-#[get("/api/v1/score/{id}")]
+#[get("/api/scores/{id}")]
 async fn get_score_json(
     id: web::Path<String>,
     pool: web::Data<PgPool>,
@@ -93,11 +93,11 @@ async fn get_score_json(
         .message_body(score))
 }
 
-#[post("/api/v1/save/{id}")]
+#[post("/api/scores/{id}/update")]
 async fn save(
     request: HttpRequest,
     id: web::Path<String>,
-    body: web::Json<SaveRequest>,
+    body: web::Json<UpdateRequest>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     validate_api_key(request)?;
