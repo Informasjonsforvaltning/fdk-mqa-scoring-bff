@@ -3,10 +3,11 @@ extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
-use std::env;
+use std::{env, str::from_utf8};
 
 use actix_web::{
-    get, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
+    get, http::header, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer,
+    Responder,
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
@@ -59,58 +60,55 @@ async fn ready() -> Result<impl Responder, Error> {
     Ok("ok")
 }
 
-#[get("/api/graphs/{id}")]
-async fn get_score_graph(
-    id: web::Path<String>,
-    pool: web::Data<PgPool>,
-) -> Result<impl Responder, Error> {
-    let uuid = parse_uuid(id.into_inner())?;
-    let mut conn = pool.get()?;
-
-    let graph = conn
-        .get_score_graph_by_id(uuid)?
-        .ok_or(Error::NotFound(uuid))?;
-
-    Ok(HttpResponse::Ok()
-        .content_type("text/turtle")
-        .message_body(graph))
-}
-
 #[get("/api/scores/{id}")]
-async fn get_score_json(
+async fn get_score(
+    accept: web::Header<header::Accept>,
     id: web::Path<String>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
-    let score = conn
-        .get_score_json_by_id(uuid)?
-        .ok_or(Error::NotFound(uuid))?;
+    if accept
+        .0
+        .iter()
+        .any(|qi| qi.item.to_string() == "text/turtle")
+    {
+        let graph = conn
+            .get_score_graph_by_id(uuid)?
+            .ok_or(Error::NotFound(uuid))?;
 
-    Ok(HttpResponse::Ok()
-        .content_type(mime::APPLICATION_JSON)
-        .message_body(score))
+        Ok(HttpResponse::Ok()
+            .content_type("text/turtle")
+            .message_body(graph))
+    } else {
+        let score = conn
+            .get_score_json_by_id(uuid)?
+            .ok_or(Error::NotFound(uuid))?;
+
+        Ok(HttpResponse::Ok()
+            .content_type(mime::APPLICATION_JSON)
+            .message_body(score))
+    }
 }
 
 #[post("/api/scores/{id}/update")]
-async fn save(
+async fn update_score(
     request: HttpRequest,
+    body: web::Bytes,
     id: web::Path<String>,
-    body: web::Json<UpdateRequest>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     validate_api_key(request)?;
+    let update: UpdateRequest = serde_json::from_str(from_utf8(&body)?)?;
 
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
     let graph = Dataset {
         id: uuid.to_string(),
-        publisher_id: body.publisher_id.clone(),
-        title: body.title.clone(),
-        score_graph: body.graph.clone(),
-        score_json: serde_json::to_string(&body.scores)?,
+        score_graph: update.graph.clone(),
+        score_json: serde_json::to_string(&update.scores)?,
     };
 
     // TODO: use web::block(move || {}) for db operations
@@ -118,7 +116,7 @@ async fn save(
     conn.store_dataset(graph)?;
     conn.drop_dimensions(uuid)?;
 
-    for dimension in &body.scores.dataset.dimensions {
+    for dimension in &update.scores.dataset.dimensions {
         conn.store_dimension(Dimension {
             dataset_id: uuid.to_string(),
             title: dimension.name.clone(),
@@ -151,9 +149,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
-            .service(get_score_graph)
-            .service(get_score_json)
-            .service(save)
+            .service(get_score)
+            .service(update_score)
     })
     .bind(("0.0.0.0", 8080))?
     .run()

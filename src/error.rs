@@ -16,6 +16,8 @@ pub enum Error {
     #[error(transparent)]
     DatabaseError(#[from] database::DatabaseError),
     #[error(transparent)]
+    Utf8Error(#[from] std::str::Utf8Error),
+    #[error(transparent)]
     SerdeJsonError(#[from] serde_json::Error),
 }
 

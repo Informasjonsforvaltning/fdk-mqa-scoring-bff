@@ -2,10 +2,8 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateRequest {
-    pub scores: Scores,
     pub graph: String,
-    pub publisher_id: String,
-    pub title: String,
+    pub scores: Scores,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
