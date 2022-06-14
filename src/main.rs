@@ -27,8 +27,8 @@ mod schema;
 mod score;
 
 lazy_static! {
-    static ref API_TOKEN: String = env::var("API_TOKEN").unwrap_or_else(|e| {
-        tracing::error!(error = e.to_string().as_str(), "API_TOKEN not found");
+    static ref API_KEY: String = env::var("API_KEY").unwrap_or_else(|e| {
+        tracing::error!(error = e.to_string().as_str(), "API_KEY not found");
         std::process::exit(1)
     });
 }
@@ -41,7 +41,7 @@ fn validate_api_key(request: HttpRequest) -> Result<(), Error> {
         .to_str()
         .map_err(|_| Error::Unauthorized("invalid api key".to_string()))?;
 
-    if token == API_TOKEN.clone() {
+    if token == API_KEY.clone() {
         Ok(())
     } else {
         Err(Error::Unauthorized("Incorrect api key".to_string()))
@@ -140,8 +140,8 @@ async fn main() -> std::io::Result<()> {
     migrate_database().unwrap();
     let pool = PgPool::new().unwrap();
 
-    // Fail if API_TOKEN missing
-    let _ = API_TOKEN.clone();
+    // Fail if API_KEY missing
+    let _ = API_KEY.clone();
 
     HttpServer::new(move || {
         App::new()
