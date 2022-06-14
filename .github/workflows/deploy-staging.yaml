@@ -19,7 +19,7 @@ jobs:
     if: github.event.pull_request.draft == false
     uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
-      app_name: fdk-mqa-scoring-bff
+      app_name: fdk-mqa-scoring-api
       environment: staging
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -31,7 +31,7 @@ jobs:
     needs: [test,build]
     uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
     with:
-      app_name: fdk-mqa-scoring-bff
+      app_name: fdk-mqa-scoring-api
       environment: staging
       cluster: digdir-fdk-dev
     secrets:
