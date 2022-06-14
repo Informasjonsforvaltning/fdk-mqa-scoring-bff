@@ -1,5 +1,0 @@
-CREATE TABLE IF NOT EXISTS graphs (
-    fdk_id VARCHAR PRIMARY KEY,
-    score VARCHAR NOT NULL,
-    vocab VARCHAR NOT NULL
-)
