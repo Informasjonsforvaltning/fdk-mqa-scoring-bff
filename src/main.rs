@@ -61,35 +61,37 @@ async fn ready() -> Result<impl Responder, Error> {
 }
 
 #[get("/api/scores/{id}")]
-async fn get_score(
-    accept: web::Header<header::Accept>,
+async fn get_score_json(
     id: web::Path<String>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
-    if accept
-        .0
-        .iter()
-        .any(|qi| qi.item.to_string() == "text/turtle")
-    {
-        let graph = conn
-            .get_score_graph_by_id(uuid)?
-            .ok_or(Error::NotFound(uuid))?;
+    let score = conn
+        .get_score_json_by_id(uuid)?
+        .ok_or(Error::NotFound(uuid))?;
 
-        Ok(HttpResponse::Ok()
-            .content_type("text/turtle")
-            .message_body(graph))
-    } else {
-        let score = conn
-            .get_score_json_by_id(uuid)?
-            .ok_or(Error::NotFound(uuid))?;
+    Ok(HttpResponse::Ok()
+        .content_type(mime::APPLICATION_JSON)
+        .message_body(score))
+}
 
-        Ok(HttpResponse::Ok()
-            .content_type(mime::APPLICATION_JSON)
-            .message_body(score))
-    }
+#[get("/api/graphs/{id}")]
+async fn get_score_graph(
+    id: web::Path<String>,
+    pool: web::Data<PgPool>,
+) -> Result<impl Responder, Error> {
+    let uuid = parse_uuid(id.into_inner())?;
+    let mut conn = pool.get()?;
+
+    let graph = conn
+        .get_score_graph_by_id(uuid)?
+        .ok_or(Error::NotFound(uuid))?;
+
+    Ok(HttpResponse::Ok()
+        .content_type("text/turtle")
+        .message_body(graph))
 }
 
 #[post("/api/scores/{id}/update")]
@@ -149,7 +151,8 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
-            .service(get_score)
+            .service(get_score_json)
+            .service(get_score_graph)
             .service(update_score)
     })
     .bind(("0.0.0.0", 8080))?
