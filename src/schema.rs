@@ -9,9 +9,9 @@ table! {
 }
 
 table! {
-    dimensions (dataset_id, title) {
+    dimensions (dataset_id, id) {
         dataset_id -> Varchar,
-        title -> Varchar,
+        id -> Varchar,
         score -> Int4,
         max_score -> Int4,
     }
