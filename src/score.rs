@@ -14,7 +14,7 @@ pub struct Scores {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Score {
-    name: String,
+    id: String,
     pub dimensions: Vec<DimensionScore>,
     score: u64,
     max_score: u64,
@@ -22,7 +22,7 @@ pub struct Score {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DimensionScore {
-    pub name: String,
+    pub id: String,
     metrics: Vec<MetricScore>,
     pub score: u64,
     pub max_score: u64,
@@ -30,7 +30,7 @@ pub struct DimensionScore {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct MetricScore {
-    metric: String,
+    id: String,
     score: u64,
     is_scored: bool,
     max_score: u64,

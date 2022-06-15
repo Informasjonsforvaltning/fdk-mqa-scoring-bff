@@ -121,7 +121,7 @@ async fn update_score(
     for dimension in &update.scores.dataset.dimensions {
         conn.store_dimension(Dimension {
             dataset_id: uuid.to_string(),
-            title: dimension.name.clone(),
+            id: dimension.id.clone(),
             score: dimension.score as i32,
             max_score: dimension.max_score as i32,
         })?;

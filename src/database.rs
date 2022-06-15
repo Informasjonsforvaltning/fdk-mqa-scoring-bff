@@ -93,7 +93,7 @@ impl PgConn {
 
         diesel::insert_into(dsl::dimensions)
             .values(&dimension)
-            .on_conflict((dsl::dataset_id, dsl::title))
+            .on_conflict((dsl::dataset_id, dsl::id))
             .do_update()
             .set(&dimension)
             .execute(&mut self.0)?;

@@ -12,7 +12,7 @@ pub struct Dataset {
 #[diesel(table_name = dimensions)]
 pub struct Dimension {
     pub dataset_id: String,
-    pub title: String,
+    pub id: String,
     pub score: i32,
     pub max_score: i32,
 }
