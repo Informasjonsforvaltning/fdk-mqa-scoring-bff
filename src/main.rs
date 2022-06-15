@@ -6,8 +6,7 @@ extern crate diesel_migrations;
 use std::{env, str::from_utf8};
 
 use actix_web::{
-    get, http::header, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer,
-    Responder,
+    get, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
