@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -34,4 +36,16 @@ pub struct MetricScore {
     score: u64,
     is_scored: bool,
     max_score: u64,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ScoreResponse {
+    pub datasets: HashMap<String, serde_json::Value>,
+    pub aggregates: HashMap<String, ScoreMaxScore>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct ScoreMaxScore {
+    pub score: f64,
+    pub max_score: f64,
 }

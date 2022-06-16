@@ -30,7 +30,7 @@ impl ResponseError for Error {
             Unauthorized(_) => HttpResponse::Unauthorized().json(ErrorReply::error(self)),
             _ => {
                 tracing::error!(
-                    error = self.to_string().as_str(),
+                    error = format!("{:?}", self).as_str(),
                     "error occured when processing request"
                 );
                 HttpResponse::InternalServerError().json(ErrorReply::error(self))
