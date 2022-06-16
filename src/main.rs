@@ -5,9 +5,9 @@ extern crate diesel_migrations;
 
 use std::{env, str::from_utf8};
 
+use actix_cors::Cors;
 use actix_web::{
-    get, http::header, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer,
-    Responder,
+    get, http, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
@@ -29,6 +29,10 @@ mod score;
 lazy_static! {
     static ref API_KEY: String = env::var("API_KEY").unwrap_or_else(|e| {
         tracing::error!(error = e.to_string().as_str(), "API_KEY not found");
+        std::process::exit(1)
+    });
+    static ref ENVIRONMENT: String = env::var("ENVIRONMENT").unwrap_or_else(|e| {
+        tracing::error!(error = e.to_string().as_str(), "ENVIRONMENT not found");
         std::process::exit(1)
     });
 }
@@ -146,7 +150,30 @@ async fn main() -> std::io::Result<()> {
     let _ = API_KEY.clone();
 
     HttpServer::new(move || {
+        let cors = Cors::default()
+            .allowed_origin_fn(|origin, _req_head| {
+                if ENVIRONMENT.clone() == "staging" {
+                    origin.as_bytes().ends_with(b"localhost:3001")
+                        || origin
+                            .as_bytes()
+                            .ends_with(b"staging.fellesdatakatalog.digdir.no")
+                        || origin.as_bytes().ends_with(b"34.117.84.181")
+                } else if ENVIRONMENT.clone() == "demo" {
+                    origin
+                        .as_bytes()
+                        .ends_with(b"demo.fellesdatakatalog.digdir.no")
+                } else {
+                    origin.as_bytes().ends_with(b"data.norge.no")
+                        || origin.as_bytes().ends_with(b"datafabrikken.norge.no")
+                }
+            })
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_header("X-API-KEY")
+            .allowed_header(http::header::ACCEPT)
+            .max_age(3600);
+
         App::new()
+            .wrap(cors)
             .wrap(Logger::default())
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
