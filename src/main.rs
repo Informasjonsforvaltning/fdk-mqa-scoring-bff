@@ -17,7 +17,7 @@ use crate::{
     database::PgPool,
     error::Error,
     models::{Dataset, Dimension},
-    score::UpdateRequest,
+    score::{ScoreResponse, UpdateRequest},
 };
 
 mod database;
@@ -64,17 +64,34 @@ async fn ready() -> Result<impl Responder, Error> {
     Ok("ok")
 }
 
+#[post("/api/scores")]
+async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Responder, Error> {
+    let ids = serde_json::from_str::<Vec<String>>(from_utf8(&body)?)?
+        .into_iter()
+        .map(|id| parse_uuid(id))
+        .collect::<Result<Vec<Uuid>, Error>>()?;
+
+    let mut conn = pool.get()?;
+
+    let response = ScoreResponse {
+        datasets: conn.json_scores(&ids)?,
+        aggregates: conn.dimension_aggregates(&ids)?,
+    };
+
+    Ok(HttpResponse::Ok()
+        .content_type(mime::APPLICATION_JSON)
+        .message_body(serde_json::to_string(&response)?))
+}
+
 #[get("/api/scores/{id}")]
-async fn get_score_json(
+async fn json_score(
     id: web::Path<String>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
-    let score = conn
-        .get_score_json_by_id(uuid)?
-        .ok_or(Error::NotFound(uuid))?;
+    let score = conn.json_score(uuid)?.ok_or(Error::NotFound(uuid))?;
 
     Ok(HttpResponse::Ok()
         .content_type(mime::APPLICATION_JSON)
@@ -82,16 +99,14 @@ async fn get_score_json(
 }
 
 #[get("/api/graphs/{id}")]
-async fn get_score_graph(
+async fn graph_score(
     id: web::Path<String>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
-    let graph = conn
-        .get_score_graph_by_id(uuid)?
-        .ok_or(Error::NotFound(uuid))?;
+    let graph = conn.graph_score(uuid)?.ok_or(Error::NotFound(uuid))?;
 
     Ok(HttpResponse::Ok()
         .content_type("text/turtle")
@@ -178,8 +193,9 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
-            .service(get_score_json)
-            .service(get_score_graph)
+            .service(json_score)
+            .service(graph_score)
+            .service(scores)
             .service(update_score)
     })
     .bind(("0.0.0.0", 8080))?

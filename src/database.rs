@@ -1,4 +1,7 @@
+use std::collections::HashMap;
+
 use diesel::{
+    dsl::any,
     expression_methods::ExpressionMethods,
     r2d2::{ConnectionManager, Pool, PooledConnection},
     result, Connection, PgConnection, QueryDsl, RunQueryDsl,
@@ -6,8 +9,9 @@ use diesel::{
 use uuid::Uuid;
 
 use crate::{
-    models::{Dataset, Dimension},
+    models::{Dataset, Dimension, DimensionAggregate},
     schema,
+    score::ScoreMaxScore,
 };
 
 diesel_migrations::embed_migrations!("./migrations");
@@ -24,6 +28,8 @@ pub enum DatabaseError {
     DieselConnectionError(#[from] diesel::ConnectionError),
     #[error(transparent)]
     DieselMigrationError(#[from] diesel_migrations::RunMigrationsError),
+    #[error(transparent)]
+    SerdeError(#[from] serde_json::Error),
 }
 
 fn var(key: &'static str) -> Result<String, DatabaseError> {
@@ -111,7 +117,7 @@ impl PgConn {
         Ok(())
     }
 
-    pub fn get_score_graph_by_id(&mut self, id: Uuid) -> Result<Option<String>, DatabaseError> {
+    pub fn graph_score(&mut self, id: Uuid) -> Result<Option<String>, DatabaseError> {
         use schema::datasets::dsl;
 
         match dsl::datasets
@@ -125,7 +131,7 @@ impl PgConn {
         }
     }
 
-    pub fn get_score_json_by_id(&mut self, id: Uuid) -> Result<Option<String>, DatabaseError> {
+    pub fn json_score(&mut self, id: Uuid) -> Result<Option<String>, DatabaseError> {
         use schema::datasets::dsl;
 
         match dsl::datasets
@@ -137,5 +143,51 @@ impl PgConn {
             Err(result::Error::NotFound) => Ok(None),
             Err(e) => Err(e.into()),
         }
+    }
+
+    pub fn json_scores(
+        &mut self,
+        ids: &Vec<Uuid>,
+    ) -> Result<HashMap<String, serde_json::Value>, DatabaseError> {
+        use schema::datasets::dsl;
+
+        let ids: Vec<String> = ids.iter().map(|id| id.to_string()).collect::<Vec<String>>();
+        let rows: Vec<(String, String)> = dsl::datasets
+            .filter(dsl::id.eq(any(ids)))
+            .select((dsl::id, dsl::score_json))
+            .get_results(&mut self.0)?;
+
+        let dataset_scores = rows
+            .into_iter()
+            .map(|(id, json)| Ok((id, serde_json::from_str(&json)?)))
+            .collect::<Result<HashMap<String, serde_json::Value>, DatabaseError>>()?;
+
+        Ok(dataset_scores)
+    }
+
+    pub fn dimension_aggregates(
+        &mut self,
+        ids: &Vec<Uuid>,
+    ) -> Result<HashMap<String, ScoreMaxScore>, DatabaseError> {
+        let ids: String = ids
+            .iter()
+            .map(|id| format!("'{}'", id))
+            .collect::<Vec<String>>()
+            .join(",");
+
+        let q = format!("SELECT id, AVG(score)::float8 AS score, AVG(max_score)::float8 AS max_score FROM dimensions WHERE dataset_id in ({}) GROUP BY id", ids);
+        let aggregates: Vec<DimensionAggregate> =
+            diesel::dsl::sql_query(q).get_results(&mut self.0)?;
+
+        Ok(aggregates
+            .into_iter()
+            .map(
+                |DimensionAggregate {
+                     id,
+                     score,
+                     max_score,
+                 }| { (id, ScoreMaxScore { score, max_score }) },
+            )
+            .collect::<HashMap<String, ScoreMaxScore>>())
     }
 }
