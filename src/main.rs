@@ -1,4 +1,6 @@
 #[macro_use]
+extern crate serde;
+#[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
@@ -11,20 +13,21 @@ use actix_web::{
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
+use utoipa::openapi::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 use uuid::Uuid;
 
 use crate::{
     database::PgPool,
+    db_models::{Dataset, Dimension},
     error::Error,
-    models::{Dataset, Dimension},
-    score::{ScoreResponse, UpdateRequest},
 };
 
 mod database;
+mod db_models;
 mod error;
 mod models;
 mod schema;
-mod score;
 
 lazy_static! {
     static ref API_KEY: String = env::var("API_KEY").unwrap_or_else(|e| {
@@ -73,9 +76,9 @@ async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Respon
 
     let mut conn = pool.get()?;
 
-    let response = ScoreResponse {
-        datasets: conn.json_scores(&ids)?,
-        aggregates: conn.dimension_aggregates(&ids)?,
+    let response = models::DatasetsScores {
+        scores: conn.json_scores(&ids)?,
+        aggregations: conn.dimension_aggregates(&ids)?,
     };
 
     Ok(HttpResponse::Ok()
@@ -121,7 +124,7 @@ async fn update_score(
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     validate_api_key(request)?;
-    let update: UpdateRequest = serde_json::from_str(from_utf8(&body)?)?;
+    let update: models::ScorePutRequest = serde_json::from_str(from_utf8(&body)?)?;
 
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
@@ -164,6 +167,8 @@ async fn main() -> std::io::Result<()> {
     // Fail if API_KEY missing
     let _ = API_KEY.clone();
 
+    let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
+
     HttpServer::new(move || {
         let cors = Cors::default()
             .allowed_origin_fn(|origin, _req_head| {
@@ -197,6 +202,7 @@ async fn main() -> std::io::Result<()> {
             .service(graph_score)
             .service(scores)
             .service(update_score)
+            .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", openapi.clone()))
     })
     .bind(("0.0.0.0", 8080))?
     .run()

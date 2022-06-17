@@ -9,9 +9,8 @@ use diesel::{
 use uuid::Uuid;
 
 use crate::{
-    models::{Dataset, Dimension, DimensionAggregate},
-    schema,
-    score::ScoreMaxScore,
+    db_models::{Dataset, Dimension, DimensionAggregate},
+    models, schema,
 };
 
 diesel_migrations::embed_migrations!("./migrations");
@@ -148,7 +147,7 @@ impl PgConn {
     pub fn json_scores(
         &mut self,
         ids: &Vec<Uuid>,
-    ) -> Result<HashMap<String, serde_json::Value>, DatabaseError> {
+    ) -> Result<HashMap<String, models::DatasetScore>, DatabaseError> {
         use schema::datasets::dsl;
 
         let ids: Vec<String> = ids.iter().map(|id| id.to_string()).collect::<Vec<String>>();
@@ -160,7 +159,7 @@ impl PgConn {
         let dataset_scores = rows
             .into_iter()
             .map(|(id, json)| Ok((id, serde_json::from_str(&json)?)))
-            .collect::<Result<HashMap<String, serde_json::Value>, DatabaseError>>()?;
+            .collect::<Result<HashMap<String, models::DatasetScore>, DatabaseError>>()?;
 
         Ok(dataset_scores)
     }
@@ -168,7 +167,7 @@ impl PgConn {
     pub fn dimension_aggregates(
         &mut self,
         ids: &Vec<Uuid>,
-    ) -> Result<HashMap<String, ScoreMaxScore>, DatabaseError> {
+    ) -> Result<Vec<models::DimensionAggregate>, DatabaseError> {
         let ids: String = ids
             .iter()
             .map(|id| format!("'{}'", id))
@@ -186,8 +185,12 @@ impl PgConn {
                      id,
                      score,
                      max_score,
-                 }| { (id, ScoreMaxScore { score, max_score }) },
+                 }| models::DimensionAggregate {
+                    id,
+                    score,
+                    max_score,
+                },
             )
-            .collect::<HashMap<String, ScoreMaxScore>>())
+            .collect())
     }
 }

@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  title: Metadata Quality
+  description: Metadata quality of datasets
+  version: 0.1.0
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+    DatasetsRequest:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            type: string
+      required:
+        - datasets
+    ScorePutRequest:
+      type: object
+      properties:
+        graph:
+          type: string
+        scores:
+          $ref: "#/components/schemas/DatasetScore"
+      required:
+        - graph
+        - scores
+    DatasetsGraphs:
+      type: object
+      properties:
+        graphs:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - graphs
+    DatasetsScores:
+      type: object
+      properties:
+        scores:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/DatasetScore"
+        aggregations:
+          type: array
+          items:
+            $ref: "#/components/schemas/DimensionAggregate"
+      required:
+        - scores
+        - aggregations
+    DatasetScore:
+      type: object
+      properties:
+        dataset:
+          $ref: "#/components/schemas/Score"
+        distributions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Score"
+      required:
+        - dataset
+        - distributions
+    Score:
+      type: object
+      properties:
+        id:
+          type: string
+        dimensions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dimension"
+        score:
+          type: integer
+        max_score:
+          type: integer
+      required:
+        - id
+        - dimensions
+        - score
+        - max_score
+    Dimension:
+      type: object
+      properties:
+        id:
+          type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        score:
+          type: integer
+        max_score:
+          type: integer
+      required:
+        - id
+        - metrics
+        - score
+        - max_score
+    DimensionAggregate:
+      type: object
+      properties:
+        id:
+          type: string
+        score:
+          type: number
+          format: double
+        max_score:
+          type: number
+          format: double
+      required:
+        - id
+        - score
+        - max_score
+    Metric:
+      type: object
+      properties:
+        id:
+          type: string
+        score:
+          type: integer
+        is_scored:
+          type: boolean
+        max_score:
+          type: integer
+      required:
+        - id
+        - metric
+        - score
+        - max_score
+
+paths:
+  /api/scores/{id}:
+    put:
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of dataset to update
+      requestBody:
+        description: Dataset scores, both json and turtle
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScorePutRequest"
+      summary: Store dataset score
+      responses:
+        "200":
+          description: Ok
+          content: {}
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
+  /api/scores:
+    post:
+      requestBody:
+        description: Requested datasets
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetsRequest"
+      summary: Metadata quality of dataset
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetsScores"
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
+  /api/graphs:
+    post:
+      requestBody:
+        description: Requested dataset
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetsRequest"
+      summary: Metadata quality of dataset in text/turtle format
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetsGraphs"
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
