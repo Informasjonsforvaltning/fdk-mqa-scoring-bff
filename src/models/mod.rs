@@ -1,3 +1,5 @@
+pub mod _api_assessments__uuid__get_200_response_inner;
+pub use self::_api_assessments__uuid__get_200_response_inner::ApiAssessmentsUuidGet200ResponseInner;
 pub mod dataset_score;
 pub use self::dataset_score::DatasetScore;
 pub mod datasets_graphs;

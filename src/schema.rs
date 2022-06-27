@@ -1,22 +1,20 @@
 table! {
-    datasets (id) {
+    dataset_assessments (id) {
         id -> Varchar,
-        publisher_id -> Varchar,
-        title -> Varchar,
-        score_graph -> Varchar,
-        score_json -> Varchar,
+        dataset_uri -> Varchar,
+        turtle_assessment -> Varchar,
+        jsonld_assessment -> Varchar,
+        json_score -> Varchar,
     }
 }
 
 table! {
-    dimensions (dataset_id, id) {
-        dataset_id -> Varchar,
+    dimensions (dataset_uri, id) {
+        dataset_uri -> Varchar,
         id -> Varchar,
         score -> Int4,
         max_score -> Int4,
     }
 }
 
-joinable!(dimensions -> datasets (dataset_id));
-
-allow_tables_to_appear_in_same_query!(datasets, dimensions);
+allow_tables_to_appear_in_same_query!(dataset_assessments, dimensions,);

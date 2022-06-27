@@ -30,12 +30,15 @@ components:
     ScorePutRequest:
       type: object
       properties:
-        graph:
+        turtle_assessment:
+          type: string
+        jsonld_assessment:
           type: string
         scores:
           $ref: "#/components/schemas/DatasetScore"
       required:
-        - graph
+        - turtle_assessment
+        - jsonld_assessment
         - scores
     DatasetsGraphs:
       type: object
@@ -141,23 +144,58 @@ components:
         - max_score
 
 paths:
-  /api/scores/{id}:
-    put:
+  /api/assessments/{uuid}:
+    get:
       parameters:
         - in: path
-          name: id
+          name: uuid
           schema:
             type: string
           required: true
-          description: ID of dataset to update
+          description: Assessment UUID
+      summary: Get dataset assessment
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/ld+json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    "@id":
+                      type: string
+                    "@type":
+                      type: string
+                  additionalProperties: true
+            text/turtle:
+              schema:
+                type: string
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
+    post:
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: Assessment UUID
       requestBody:
-        description: Dataset scores, both json and turtle
+        description: Assessment in turtle and jsonld format, along with json scores
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/ScorePutRequest"
-      summary: Store dataset score
+      summary: Store dataset assessment
       responses:
         "200":
           description: Ok
@@ -173,13 +211,13 @@ paths:
   /api/scores:
     post:
       requestBody:
-        description: Requested datasets
+        description: Dataset uris
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/DatasetsRequest"
-      summary: Metadata quality of dataset
+      summary: Get dataset assessment scores
       responses:
         "200":
           description: Ok
@@ -195,16 +233,16 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           headers: {}
-  /api/graphs:
+  /api/assessments:
     post:
       requestBody:
-        description: Requested dataset
+        description: Dataset uris
         required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/DatasetsRequest"
-      summary: Metadata quality of dataset in text/turtle format
+      summary: Get dataset assessments
       responses:
         "200":
           description: Ok

@@ -553,6 +553,7 @@ dependencies = [
  "actix-web",
  "diesel",
  "diesel_migrations",
+ "http",
  "lazy_static",
  "mime",
  "r2d2",
