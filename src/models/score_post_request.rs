@@ -12,7 +12,7 @@
 
 
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct ScorePutRequest {
+pub struct ScorePostRequest {
     #[serde(rename = "turtle_assessment")]
     pub turtle_assessment: String,
     #[serde(rename = "jsonld_assessment")]
@@ -21,9 +21,9 @@ pub struct ScorePutRequest {
     pub scores: Box<crate::models::DatasetScore>,
 }
 
-impl ScorePutRequest {
-    pub fn new(turtle_assessment: String, jsonld_assessment: String, scores: crate::models::DatasetScore) -> ScorePutRequest {
-        ScorePutRequest {
+impl ScorePostRequest {
+    pub fn new(turtle_assessment: String, jsonld_assessment: String, scores: crate::models::DatasetScore) -> ScorePostRequest {
+        ScorePostRequest {
             turtle_assessment,
             jsonld_assessment,
             scores: Box::new(scores),

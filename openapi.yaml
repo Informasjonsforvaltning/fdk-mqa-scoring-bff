@@ -27,7 +27,7 @@ components:
             type: string
       required:
         - datasets
-    ScorePutRequest:
+    ScorePostRequest:
       type: object
       properties:
         turtle_assessment:
@@ -194,7 +194,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ScorePutRequest"
+              $ref: "#/components/schemas/ScorePostRequest"
       summary: Store dataset assessment
       responses:
         "200":

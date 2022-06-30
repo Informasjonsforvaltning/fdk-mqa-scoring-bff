@@ -18,5 +18,5 @@ pub mod metric;
 pub use self::metric::Metric;
 pub mod score;
 pub use self::score::Score;
-pub mod score_put_request;
-pub use self::score_put_request::ScorePutRequest;
+pub mod score_post_request;
+pub use self::score_post_request::ScorePostRequest;

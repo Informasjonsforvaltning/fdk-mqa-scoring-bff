@@ -110,7 +110,7 @@ async fn update_assessment(
 ) -> Result<impl Responder, Error> {
     validate_api_key(request)?;
     let uuid = parse_uuid(id.into_inner())?;
-    let update: models::ScorePutRequest = serde_json::from_str(from_utf8(&body)?)?;
+    let update: models::ScorePostRequest = serde_json::from_str(from_utf8(&body)?)?;
     let dataset_uri = update.scores.as_ref().dataset.id.clone();
 
     let mut conn = pool.get()?;
