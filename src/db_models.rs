@@ -2,17 +2,19 @@ use super::schema::*;
 use diesel::sql_types::Double;
 
 #[derive(Insertable, Queryable, AsChangeset)]
-#[table_name = "datasets"]
-pub struct Dataset {
+#[table_name = "dataset_assessments"]
+pub struct DatasetAssessment {
     pub id: String,
-    pub score_graph: String,
-    pub score_json: String,
+    pub dataset_uri: String,
+    pub turtle_assessment: String,
+    pub jsonld_assessment: String,
+    pub json_score: String,
 }
 
 #[derive(Insertable, Queryable, AsChangeset)]
 #[table_name = "dimensions"]
 pub struct Dimension {
-    pub dataset_id: String,
+    pub dataset_uri: String,
     pub id: String,
     pub score: i32,
     pub max_score: i32,

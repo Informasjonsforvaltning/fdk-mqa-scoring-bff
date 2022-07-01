@@ -6,12 +6,12 @@ use diesel::{
     r2d2::{ConnectionManager, Pool, PooledConnection},
     result, Connection, PgConnection, QueryDsl, RunQueryDsl,
 };
+use http::Uri;
 use uuid::Uuid;
 
 use crate::{
-    models::{Dataset, Dimension, DimensionAggregate},
-    schema,
-    score::ScoreMaxScore,
+    db_models::{DatasetAssessment, Dimension, DimensionAggregate},
+    models, schema,
 };
 
 diesel_migrations::embed_migrations!("./migrations");
@@ -81,14 +81,14 @@ impl PgConn {
         Ok(())
     }
 
-    pub fn store_dataset(&mut self, dataset: Dataset) -> Result<(), DatabaseError> {
-        use schema::datasets::dsl;
+    pub fn store_dataset(&mut self, assessment: DatasetAssessment) -> Result<(), DatabaseError> {
+        use schema::dataset_assessments::dsl;
 
-        diesel::insert_into(dsl::datasets)
-            .values(&dataset)
+        diesel::insert_into(dsl::dataset_assessments)
+            .values(&assessment)
             .on_conflict(dsl::id)
             .do_update()
-            .set(&dataset)
+            .set(&assessment)
             .execute(&mut self.0)?;
 
         Ok(())
@@ -99,7 +99,7 @@ impl PgConn {
 
         diesel::insert_into(dsl::dimensions)
             .values(&dimension)
-            .on_conflict((dsl::dataset_id, dsl::id))
+            .on_conflict((dsl::dataset_uri, dsl::id))
             .do_update()
             .set(&dimension)
             .execute(&mut self.0)?;
@@ -107,39 +107,45 @@ impl PgConn {
         Ok(())
     }
 
-    pub fn drop_dimensions(&mut self, id: Uuid) -> Result<(), DatabaseError> {
+    pub fn drop_dataset_dimensions(&mut self, dataset_uri: &str) -> Result<(), DatabaseError> {
         use schema::dimensions::dsl;
 
         diesel::delete(dsl::dimensions)
-            .filter(dsl::dataset_id.eq(id.to_string()))
+            .filter(dsl::dataset_uri.eq(dataset_uri))
             .execute(&mut self.0)?;
 
         Ok(())
     }
 
-    pub fn graph_score(&mut self, id: Uuid) -> Result<Option<String>, DatabaseError> {
-        use schema::datasets::dsl;
+    pub fn turtle_assessment(
+        &mut self,
+        dataset_assessment: Uuid,
+    ) -> Result<Option<String>, DatabaseError> {
+        use schema::dataset_assessments::dsl;
 
-        match dsl::datasets
-            .filter(dsl::id.eq(id.to_string()))
-            .select(dsl::score_graph)
+        match dsl::dataset_assessments
+            .filter(dsl::id.eq(dataset_assessment.to_string()))
+            .select(dsl::turtle_assessment)
             .first(&mut self.0)
         {
-            Ok(graph) => Ok(Some(graph)),
+            Ok(assessment) => Ok(Some(assessment)),
             Err(result::Error::NotFound) => Ok(None),
             Err(e) => Err(e.into()),
         }
     }
 
-    pub fn json_score(&mut self, id: Uuid) -> Result<Option<String>, DatabaseError> {
-        use schema::datasets::dsl;
+    pub fn jsonld_assessment(
+        &mut self,
+        dataset_assessment: Uuid,
+    ) -> Result<Option<String>, DatabaseError> {
+        use schema::dataset_assessments::dsl;
 
-        match dsl::datasets
-            .filter(dsl::id.eq(id.to_string()))
-            .select(dsl::score_json)
+        match dsl::dataset_assessments
+            .filter(dsl::id.eq(dataset_assessment.to_string()))
+            .select(dsl::jsonld_assessment)
             .first(&mut self.0)
         {
-            Ok(graph) => Ok(Some(graph)),
+            Ok(assessment) => Ok(Some(assessment)),
             Err(result::Error::NotFound) => Ok(None),
             Err(e) => Err(e.into()),
         }
@@ -147,35 +153,41 @@ impl PgConn {
 
     pub fn json_scores(
         &mut self,
-        ids: &Vec<Uuid>,
-    ) -> Result<HashMap<String, serde_json::Value>, DatabaseError> {
-        use schema::datasets::dsl;
+        dataset_uris: &Vec<Uri>,
+    ) -> Result<HashMap<String, models::DatasetScore>, DatabaseError> {
+        use schema::dataset_assessments::dsl;
 
-        let ids: Vec<String> = ids.iter().map(|id| id.to_string()).collect::<Vec<String>>();
-        let rows: Vec<(String, String)> = dsl::datasets
-            .filter(dsl::id.eq(any(ids)))
-            .select((dsl::id, dsl::score_json))
+        let uris = dataset_uris
+            .iter()
+            .map(|uri| uri.to_string())
+            .collect::<Vec<String>>();
+
+        let rows: Vec<(String, String)> = dsl::dataset_assessments
+            .filter(dsl::dataset_uri.eq(any(uris)))
+            .select((dsl::dataset_uri, dsl::json_score))
             .get_results(&mut self.0)?;
 
         let dataset_scores = rows
             .into_iter()
-            .map(|(id, json)| Ok((id, serde_json::from_str(&json)?)))
-            .collect::<Result<HashMap<String, serde_json::Value>, DatabaseError>>()?;
+            .map(|(dataset_uri, json)| Ok((dataset_uri, serde_json::from_str(&json)?)))
+            .collect::<Result<HashMap<String, models::DatasetScore>, DatabaseError>>()?;
 
         Ok(dataset_scores)
     }
 
     pub fn dimension_aggregates(
         &mut self,
-        ids: &Vec<Uuid>,
-    ) -> Result<HashMap<String, ScoreMaxScore>, DatabaseError> {
-        let ids: String = ids
-            .iter()
-            .map(|id| format!("'{}'", id))
-            .collect::<Vec<String>>()
-            .join(",");
-
-        let q = format!("SELECT id, AVG(score)::float8 AS score, AVG(max_score)::float8 AS max_score FROM dimensions WHERE dataset_id in ({}) GROUP BY id", ids);
+        dataset_uris: &Vec<Uri>,
+    ) -> Result<Vec<models::DimensionAggregate>, DatabaseError> {
+        let q = format!(
+            "SELECT id, AVG(score)::float8 AS score, AVG(max_score)::float8 AS max_score
+             FROM dimensions WHERE dataset_uri in ({}) GROUP BY id",
+            dataset_uris
+                .iter()
+                .map(|uri| format!("'{uri}'"))
+                .collect::<Vec<String>>()
+                .join(",")
+        );
         let aggregates: Vec<DimensionAggregate> =
             diesel::dsl::sql_query(q).get_results(&mut self.0)?;
 
@@ -186,8 +198,12 @@ impl PgConn {
                      id,
                      score,
                      max_score,
-                 }| { (id, ScoreMaxScore { score, max_score }) },
+                 }| models::DimensionAggregate {
+                    id,
+                    score,
+                    max_score,
+                },
             )
-            .collect::<HashMap<String, ScoreMaxScore>>())
+            .collect())
     }
 }

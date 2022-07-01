@@ -1,2 +1,2 @@
-DROP TABLE datasets;
+DROP TABLE dataset_assessments;
 DROP TABLE dimension;

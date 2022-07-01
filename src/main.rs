@@ -1,30 +1,39 @@
 #[macro_use]
+extern crate serde;
+#[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
 
 use std::{env, str::from_utf8};
 
+use ::http::{uri::InvalidUri, Uri};
 use actix_cors::Cors;
 use actix_web::{
-    get, http, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
+    get,
+    http::{self, header},
+    middleware::Logger,
+    post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
+use utoipa::openapi::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 use uuid::Uuid;
 
 use crate::{
     database::PgPool,
+    db_models::{DatasetAssessment, Dimension},
     error::Error,
-    models::{Dataset, Dimension},
-    score::{ScoreResponse, UpdateRequest},
+    models::DatasetsRequest,
 };
 
 mod database;
+mod db_models;
 mod error;
+#[allow(dead_code, non_snake_case)]
 mod models;
 mod schema;
-mod score;
 
 lazy_static! {
     static ref API_KEY: String = env::var("API_KEY").unwrap_or_else(|e| {
@@ -64,82 +73,64 @@ async fn ready() -> Result<impl Responder, Error> {
     Ok("ok")
 }
 
-#[post("/api/scores")]
-async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Responder, Error> {
-    let ids = serde_json::from_str::<Vec<String>>(from_utf8(&body)?)?
-        .into_iter()
-        .map(|id| parse_uuid(id))
-        .collect::<Result<Vec<Uuid>, Error>>()?;
-
-    let mut conn = pool.get()?;
-
-    let response = ScoreResponse {
-        datasets: conn.json_scores(&ids)?,
-        aggregates: conn.dimension_aggregates(&ids)?,
-    };
-
-    Ok(HttpResponse::Ok()
-        .content_type(mime::APPLICATION_JSON)
-        .message_body(serde_json::to_string(&response)?))
-}
-
-#[get("/api/scores/{id}")]
-async fn json_score(
+#[get("/api/assessments/{id}")]
+async fn assessment_graph(
+    accept: web::Header<header::Accept>,
     id: web::Path<String>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     let uuid = parse_uuid(id.into_inner())?;
     let mut conn = pool.get()?;
 
-    let score = conn.json_score(uuid)?.ok_or(Error::NotFound(uuid))?;
+    if accept
+        .0
+        .iter()
+        .any(|qi| qi.item.to_string() == "application/ld+json")
+    {
+        let graph = conn.jsonld_assessment(uuid)?.ok_or(Error::NotFound(uuid))?;
 
-    Ok(HttpResponse::Ok()
-        .content_type(mime::APPLICATION_JSON)
-        .message_body(score))
+        Ok(HttpResponse::Ok()
+            .content_type("application/ld+json")
+            .message_body(graph))
+    } else {
+        let graph = conn.turtle_assessment(uuid)?.ok_or(Error::NotFound(uuid))?;
+
+        Ok(HttpResponse::Ok()
+            .content_type("text/turtle")
+            .message_body(graph))
+    }
 }
 
-#[get("/api/graphs/{id}")]
-async fn graph_score(
-    id: web::Path<String>,
-    pool: web::Data<PgPool>,
-) -> Result<impl Responder, Error> {
-    let uuid = parse_uuid(id.into_inner())?;
-    let mut conn = pool.get()?;
-
-    let graph = conn.graph_score(uuid)?.ok_or(Error::NotFound(uuid))?;
-
-    Ok(HttpResponse::Ok()
-        .content_type("text/turtle")
-        .message_body(graph))
-}
-
-#[post("/api/scores/{id}/update")]
-async fn update_score(
+#[post("/api/assessments/{id}")]
+async fn update_assessment(
     request: HttpRequest,
     body: web::Bytes,
     id: web::Path<String>,
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     validate_api_key(request)?;
-    let update: UpdateRequest = serde_json::from_str(from_utf8(&body)?)?;
-
     let uuid = parse_uuid(id.into_inner())?;
+    let update: models::ScorePostRequest = serde_json::from_str(from_utf8(&body)?)?;
+    let dataset_uri = update.scores.as_ref().dataset.id.clone();
+
     let mut conn = pool.get()?;
 
-    let graph = Dataset {
+    let assessment = DatasetAssessment {
         id: uuid.to_string(),
-        score_graph: update.graph.clone(),
-        score_json: serde_json::to_string(&update.scores)?,
+        dataset_uri: dataset_uri.clone(),
+        turtle_assessment: update.turtle_assessment.clone(),
+        jsonld_assessment: update.jsonld_assessment.clone(),
+        json_score: serde_json::to_string(&update.scores)?,
     };
 
     // TODO: use web::block(move || {}) for db operations
 
-    conn.store_dataset(graph)?;
-    conn.drop_dimensions(uuid)?;
+    conn.drop_dataset_dimensions(&dataset_uri)?;
+    conn.store_dataset(assessment)?;
 
     for dimension in &update.scores.dataset.dimensions {
         conn.store_dimension(Dimension {
-            dataset_id: uuid.to_string(),
+            dataset_uri: dataset_uri.clone(),
             id: dimension.id.clone(),
             score: dimension.score as i32,
             max_score: dimension.max_score as i32,
@@ -149,6 +140,55 @@ async fn update_score(
     Ok(HttpResponse::Accepted()
         .content_type(mime::APPLICATION_JSON)
         .message_body(""))
+}
+
+#[post("/api/scores")]
+async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Responder, Error> {
+    let dataset_uris = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?
+        .datasets
+        .into_iter()
+        .map(|uri| uri.parse::<Uri>())
+        .collect::<Result<Vec<Uri>, InvalidUri>>()?;
+    let mut conn = pool.get()?;
+
+    let response = models::DatasetsScores {
+        scores: conn.json_scores(&dataset_uris)?,
+        aggregations: conn.dimension_aggregates(&dataset_uris)?,
+    };
+
+    Ok(HttpResponse::Ok()
+        .content_type(mime::APPLICATION_JSON)
+        .message_body(serde_json::to_string(&response)?))
+}
+
+#[post("/api/assessments")]
+async fn assessments(
+    accept: web::Header<header::Accept>,
+    pool: web::Data<PgPool>,
+    body: web::Bytes,
+) -> Result<impl Responder, Error> {
+    let _ids = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?.datasets;
+    let mut _conn = pool.get()?;
+
+    if accept
+        .0
+        .iter()
+        .any(|qi| qi.item.to_string() == "application/ld+json")
+    {
+        // TODO: fetch graphs in jsonld format
+        let graphs = "";
+
+        Ok(HttpResponse::Ok()
+            .content_type("application/ld+json")
+            .message_body(graphs))
+    } else {
+        // TODO: fetch graphs in turtle format
+        let graphs = "";
+
+        Ok(HttpResponse::Ok()
+            .content_type("text/turtle")
+            .message_body(graphs))
+    }
 }
 
 #[actix_web::main]
@@ -163,6 +203,8 @@ async fn main() -> std::io::Result<()> {
 
     // Fail if API_KEY missing
     let _ = API_KEY.clone();
+
+    let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
 
     HttpServer::new(move || {
         let cors = Cors::default()
@@ -193,12 +235,13 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
-            .service(json_score)
-            .service(graph_score)
+            .service(assessment_graph)
+            .service(update_assessment)
+            .service(assessments)
             .service(scores)
-            .service(update_score)
+            .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", openapi.clone()))
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind(("0.0.0.0", 8082))?
     .run()
     .await
 }

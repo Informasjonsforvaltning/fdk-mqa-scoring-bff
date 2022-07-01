@@ -11,6 +11,8 @@ pub enum Error {
     NotFound(Uuid),
     #[error("invalid FDK ID: '{0}'")]
     InvalidID(String),
+    #[error(transparent)]
+    InvalidUri(#[from] http::uri::InvalidUri),
     #[error("Unauthorized: {0}")]
     Unauthorized(String),
     #[error(transparent)]
@@ -27,6 +29,7 @@ impl ResponseError for Error {
         match self {
             NotFound(_) => HttpResponse::NotFound().json(ErrorReply::message(self)),
             InvalidID(_) => HttpResponse::BadRequest().json(ErrorReply::error(self)),
+            InvalidUri(_) => HttpResponse::BadRequest().json(ErrorReply::error(self)),
             Unauthorized(_) => HttpResponse::Unauthorized().json(ErrorReply::error(self)),
             _ => {
                 tracing::error!(

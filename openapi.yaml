@@ -1,0 +1,260 @@
+openapi: 3.0.3
+info:
+  title: Metadata Quality
+  description: Metadata quality of datasets
+  version: 0.1.0
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string
+    DatasetsRequest:
+      type: object
+      properties:
+        datasets:
+          type: array
+          items:
+            type: string
+      required:
+        - datasets
+    ScorePostRequest:
+      type: object
+      properties:
+        turtle_assessment:
+          type: string
+        jsonld_assessment:
+          type: string
+        scores:
+          $ref: "#/components/schemas/DatasetScore"
+      required:
+        - turtle_assessment
+        - jsonld_assessment
+        - scores
+    DatasetsGraphs:
+      type: object
+      properties:
+        graphs:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - graphs
+    DatasetsScores:
+      type: object
+      properties:
+        scores:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/DatasetScore"
+        aggregations:
+          type: array
+          items:
+            $ref: "#/components/schemas/DimensionAggregate"
+      required:
+        - scores
+        - aggregations
+    DatasetScore:
+      type: object
+      properties:
+        dataset:
+          $ref: "#/components/schemas/Score"
+        distributions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Score"
+      required:
+        - dataset
+        - distributions
+    Score:
+      type: object
+      properties:
+        id:
+          type: string
+        dimensions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Dimension"
+        score:
+          type: integer
+        max_score:
+          type: integer
+      required:
+        - id
+        - dimensions
+        - score
+        - max_score
+    Dimension:
+      type: object
+      properties:
+        id:
+          type: string
+        metrics:
+          type: array
+          items:
+            $ref: "#/components/schemas/Metric"
+        score:
+          type: integer
+        max_score:
+          type: integer
+      required:
+        - id
+        - metrics
+        - score
+        - max_score
+    DimensionAggregate:
+      type: object
+      properties:
+        id:
+          type: string
+        score:
+          type: number
+          format: double
+        max_score:
+          type: number
+          format: double
+      required:
+        - id
+        - score
+        - max_score
+    Metric:
+      type: object
+      properties:
+        id:
+          type: string
+        score:
+          type: integer
+        is_scored:
+          type: boolean
+        max_score:
+          type: integer
+      required:
+        - id
+        - metric
+        - score
+        - max_score
+
+paths:
+  /api/assessments/{uuid}:
+    get:
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: Assessment UUID
+      summary: Get dataset assessment
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/ld+json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    "@id":
+                      type: string
+                    "@type":
+                      type: string
+                  additionalProperties: true
+            text/turtle:
+              schema:
+                type: string
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
+    post:
+      parameters:
+        - in: path
+          name: uuid
+          schema:
+            type: string
+          required: true
+          description: Assessment UUID
+      requestBody:
+        description: Assessment in turtle and jsonld format, along with json scores
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScorePostRequest"
+      summary: Store dataset assessment
+      responses:
+        "200":
+          description: Ok
+          content: {}
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
+  /api/scores:
+    post:
+      requestBody:
+        description: Dataset uris
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetsRequest"
+      summary: Get dataset assessment scores
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetsScores"
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
+  /api/assessments:
+    post:
+      requestBody:
+        description: Dataset uris
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DatasetsRequest"
+      summary: Get dataset assessments
+      responses:
+        "200":
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DatasetsGraphs"
+          headers: {}
+        "500":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          headers: {}
