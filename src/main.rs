@@ -227,6 +227,7 @@ async fn main() -> std::io::Result<()> {
             .allowed_methods(vec!["GET", "POST"])
             .allowed_header("X-API-KEY")
             .allowed_header(http::header::ACCEPT)
+            .disable_preflight()
             .max_age(3600);
 
         App::new()
