@@ -208,26 +208,9 @@ async fn main() -> std::io::Result<()> {
 
     HttpServer::new(move || {
         let cors = Cors::default()
-            .allowed_origin_fn(|origin, _req_head| {
-                if ENVIRONMENT.clone() == "staging" {
-                    origin.as_bytes().ends_with(b"localhost:3001")
-                        || origin
-                            .as_bytes()
-                            .ends_with(b"staging.fellesdatakatalog.digdir.no")
-                        || origin.as_bytes().ends_with(b"34.117.84.181")
-                } else if ENVIRONMENT.clone() == "demo" {
-                    origin
-                        .as_bytes()
-                        .ends_with(b"demo.fellesdatakatalog.digdir.no")
-                } else {
-                    origin.as_bytes().ends_with(b"data.norge.no")
-                        || origin.as_bytes().ends_with(b"datafabrikken.norge.no")
-                }
-            })
-            .allowed_methods(vec!["GET", "POST"])
-            .allowed_header("X-API-KEY")
-            .allowed_header(http::header::ACCEPT)
-            .disable_preflight()
+            .allow_any_method()
+            .allow_any_header()
+            .allow_any_origin()
             .max_age(3600);
 
         App::new()
