@@ -207,15 +207,7 @@ async fn main() -> std::io::Result<()> {
     let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
 
     HttpServer::new(move || {
-        let cors = Cors::default()
-        .send_wildcard()
-        .allow_any_origin()
-        .allowed_methods(vec!["GET", "POST"])
-        .allowed_header("X-API-KEY")
-        .allowed_header(http::header::ACCEPT)
-        .allowed_header(http::header::ACCEPT_ENCODING)  
-        .disable_vary_header()
-        .max_age(3600);
+        let cors = Cors::permissive();
 
         App::new()
             .wrap(cors)
