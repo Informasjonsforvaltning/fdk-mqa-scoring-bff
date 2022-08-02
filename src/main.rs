@@ -207,7 +207,29 @@ async fn main() -> std::io::Result<()> {
     let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
 
     HttpServer::new(move || {
-        let cors = Cors::permissive();
+        let cors = Cors::default()
+        .supports_credentials()
+        .allowed_origin_fn(|origin, _req_head| {
+            if ENVIRONMENT.clone() == "staging" {
+                origin.as_bytes().ends_with(b"localhost:3001")
+                    || origin
+                        .as_bytes()
+                        .ends_with(b"staging.fellesdatakatalog.digdir.no")
+                    || origin.as_bytes().ends_with(b"34.117.84.181")
+            } else if ENVIRONMENT.clone() == "demo" {
+                origin
+                    .as_bytes()
+                    .ends_with(b"demo.fellesdatakatalog.digdir.no")
+            } else {
+                origin.as_bytes().ends_with(b"data.norge.no")
+                    || origin.as_bytes().ends_with(b"datafabrikken.norge.no")
+            }
+        })
+        .allowed_methods(vec!["GET", "POST", "OPTIONS"])
+        .allowed_header("X-API-KEY")
+        .allowed_header(http::header::ACCEPT)
+        .allowed_header(http::header::ACCEPT_ENCODING)  
+        .max_age(3600);
 
         App::new()
             .wrap(cors)
