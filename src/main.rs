@@ -214,7 +214,7 @@ async fn main() -> std::io::Result<()> {
         .allowed_header("X-API-KEY")
         .allowed_header(http::header::ACCEPT)
         .allowed_header(http::header::ACCEPT_ENCODING)  
-        .disable_preflight()
+        .disable_vary_header()
         .max_age(3600);
 
         App::new()
