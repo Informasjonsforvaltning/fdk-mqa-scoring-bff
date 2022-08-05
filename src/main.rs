@@ -10,10 +10,8 @@ use std::{env, str::from_utf8};
 use ::http::{uri::InvalidUri, Uri};
 use actix_cors::Cors;
 use actix_web::{
-    get,
-    http::{self, header},
-    middleware::Logger,
-    post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
+    get, http::header, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer,
+    Responder,
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
@@ -216,6 +214,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
+            .app_data(web::JsonConfig::default().limit(16384))
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
