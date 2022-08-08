@@ -214,7 +214,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .wrap(Logger::default())
-            .app_data(web::JsonConfig::default().limit(16384))
+            .app_data(web::JsonConfig::default().limit(33_554_432))
             .app_data(web::Data::new(pool.clone()))
             .service(ping)
             .service(ready)
