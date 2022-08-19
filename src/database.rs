@@ -6,7 +6,6 @@ use diesel::{
     r2d2::{ConnectionManager, Pool, PooledConnection},
     result, Connection, PgConnection, QueryDsl, RunQueryDsl,
 };
-use http::Uri;
 use uuid::Uuid;
 
 use crate::{
@@ -151,9 +150,10 @@ impl PgConn {
         }
     }
 
+    /// NOTE!! Ensure that URIs are valid before calling this.
     pub fn json_scores(
         &mut self,
-        dataset_uris: &Vec<Uri>,
+        dataset_uris: &Vec<String>,
     ) -> Result<HashMap<String, models::DatasetScore>, DatabaseError> {
         use schema::dataset_assessments::dsl;
 
@@ -175,9 +175,10 @@ impl PgConn {
         Ok(dataset_scores)
     }
 
+    /// NOTE!! Ensure that URIs are valid before calling this.
     pub fn dimension_aggregates(
         &mut self,
-        dataset_uris: &Vec<Uri>,
+        dataset_uris: &Vec<String>,
     ) -> Result<Vec<models::DimensionAggregate>, DatabaseError> {
         let q = format!(
             "SELECT id, AVG(score)::float8 AS score, AVG(max_score)::float8 AS max_score
