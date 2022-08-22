@@ -1,0 +1,15 @@
+---
+version: '2'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mqa
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - runuser -u postgres -- psql -c "\l" | grep mqa
+      interval: 3s

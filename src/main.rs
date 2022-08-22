@@ -10,8 +10,12 @@ use std::{env, str::from_utf8};
 use ::http::{uri::InvalidUri, Uri};
 use actix_cors::Cors;
 use actix_web::{
-    get, http::header, middleware::Logger, post, web, App, HttpRequest, HttpResponse, HttpServer,
-    Responder,
+    body::{BoxBody, EitherBody},
+    dev::{ServiceFactory, ServiceRequest, ServiceResponse},
+    get,
+    http::header,
+    middleware::Logger,
+    post, web, App, HttpRequest, HttpResponse, HttpServer, Responder,
 };
 use database::migrate_database;
 use lazy_static::lazy_static;
@@ -142,16 +146,18 @@ async fn update_assessment(
 
 #[post("/api/scores")]
 async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Responder, Error> {
-    let dataset_uris = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?
+    let data = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?;
+    // Check that uris are valid, but disregard parsed value.
+    let _parsed_dataset_uris = data
         .datasets
-        .into_iter()
+        .iter()
         .map(|uri| uri.parse::<Uri>())
         .collect::<Result<Vec<Uri>, InvalidUri>>()?;
     let mut conn = pool.get()?;
 
     let response = models::DatasetsScores {
-        scores: conn.json_scores(&dataset_uris)?,
-        aggregations: conn.dimension_aggregates(&dataset_uris)?,
+        scores: conn.json_scores(&data.datasets)?,
+        aggregations: conn.dimension_aggregates(&data.datasets)?,
     };
 
     Ok(HttpResponse::Ok()
@@ -165,7 +171,14 @@ async fn assessments(
     pool: web::Data<PgPool>,
     body: web::Bytes,
 ) -> Result<impl Responder, Error> {
-    let _ids = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?.datasets;
+    let data = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?;
+    // Check that uris are valid, but disregard parsed value.
+    let _parsed_dataset_uris = data
+        .datasets
+        .iter()
+        .map(|uri| uri.parse::<Uri>())
+        .collect::<Result<Vec<Uri>, InvalidUri>>()?;
+
     let mut _conn = pool.get()?;
 
     if accept
@@ -189,6 +202,37 @@ async fn assessments(
     }
 }
 
+fn app() -> App<
+    impl ServiceFactory<
+        ServiceRequest,
+        Response = ServiceResponse<EitherBody<BoxBody>>,
+        Error = actix_web::Error,
+        Config = (),
+        InitError = (),
+    >,
+> {
+    let pool = PgPool::new().unwrap();
+
+    let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
+    let cors = Cors::default()
+        .allow_any_method()
+        .allow_any_header()
+        .allow_any_origin()
+        .max_age(3600);
+
+    App::new()
+        .wrap(cors)
+        .app_data(web::PayloadConfig::default().limit(8_388_608))
+        .app_data(web::Data::new(pool.clone()))
+        .service(ping)
+        .service(ready)
+        .service(assessment_graph)
+        .service(update_assessment)
+        .service(assessments)
+        .service(scores)
+        .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", openapi.clone()))
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     tracing_subscriber::fmt()
@@ -197,38 +241,125 @@ async fn main() -> std::io::Result<()> {
         .init();
 
     migrate_database().unwrap();
-    let pool = PgPool::new().unwrap();
 
     // Fail if API_KEY missing
     let _ = API_KEY.clone();
 
-    let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
-
-    HttpServer::new(move || {
-        let cors = Cors::default()
-            .allow_any_method()
-            .allow_any_header()
-            .allow_any_origin()
-            .max_age(3600);
-
-        App::new()
-            .wrap(cors)
-            .wrap(Logger::default())
-            .app_data(web::PayloadConfig::default().limit(8_388_608))
-            .app_data(web::Data::new(pool.clone()))
-            .service(ping)
-            .service(ready)
-            .service(assessment_graph)
-            .service(update_assessment)
-            .service(assessments)
-            .service(scores)
-            .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", openapi.clone()))
-    })
-    .bind(("0.0.0.0", 8082))?
-    .run()
-    .await
+    HttpServer::new(move || app().wrap(Logger::default()))
+        .bind(("0.0.0.0", 8082))?
+        .run()
+        .await
 }
 
 fn parse_uuid(uuid: String) -> Result<Uuid, Error> {
     Uuid::parse_str(uuid.as_ref()).map_err(|_| Error::InvalidID(uuid))
+}
+
+#[cfg(test)]
+mod tests {
+    use actix_web::{http::header::ContentType, test};
+    use http::StatusCode;
+    use serde_json::Value;
+    use uuid::Uuid;
+
+    use super::*;
+
+    async fn test_get_ok(path: &str) {
+        let app = test::init_service(app()).await;
+        let req = test::TestRequest::get()
+            .insert_header(ContentType::plaintext())
+            .uri(path)
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+    }
+
+    #[actix_web::test]
+    async fn test_ping() {
+        test_get_ok("/ping").await;
+    }
+
+    #[actix_web::test]
+    async fn test_ready() {
+        test_get_ok("/ready").await;
+    }
+
+    #[actix_web::test]
+    async fn test_404() {
+        let uuid = Uuid::parse_str("02f09a3f-1624-3b1d-1337-44eff7708208").unwrap();
+        let path = format!("/api/assessments/{}", uuid);
+
+        let app = test::init_service(app()).await;
+
+        let req = test::TestRequest::get()
+            .insert_header(ContentType::plaintext())
+            .uri(&path)
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert_eq!(resp.status(), StatusCode::NOT_FOUND);
+    }
+
+    #[actix_web::test]
+    async fn test_post_and_get_scores() {
+        let uuid = Uuid::parse_str("02f09a3f-1624-3b1d-8409-44eff7708208").unwrap();
+        let path = format!("/api/assessments/{}", uuid);
+
+        let app = test::init_service(app()).await;
+
+        let req = test::TestRequest::post()
+            .insert_header(ContentType::json())
+            .set_json(include_str!("../tests/post.json"))
+            .uri(&path)
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        //println!("{:?}", resp.response().body());
+        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+
+        let req = test::TestRequest::post()
+            .insert_header(ContentType::json())
+            .insert_header(("X-API-KEY", "bar"))
+            .set_json(include_str!("../tests/post.json"))
+            .uri(&path)
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        //println!("{:?}", resp.response().body());
+        assert_eq!(resp.status(), StatusCode::UNAUTHORIZED);
+
+        let req = test::TestRequest::post()
+            .insert_header(ContentType::json())
+            .insert_header(("X-API-KEY", "foo"))
+            .set_json(serde_json::from_str::<Value>(include_str!("../tests/post.json")).unwrap())
+            .uri(&path)
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        //println!("{:?}", resp.response().body());
+        assert!(resp.status().is_success());
+
+        let req = test::TestRequest::get().uri(&path).to_request();
+        let bytes = test::call_and_read_body(&app, req).await;
+        assert_eq!(
+            String::from_utf8(bytes.to_vec()).unwrap(),
+            include_str!("../tests/assessment.ttl")
+        );
+
+        let req = test::TestRequest::post()
+            .insert_header(ContentType::json())
+            .set_json(
+                serde_json::from_str::<Value>(
+                    r#"{
+                    "datasets": [
+                        "https://dataset.foo"
+                    ]
+                }"#,
+                )
+                .unwrap(),
+            )
+            .uri("/api/scores")
+            .to_request();
+        let body: Value = test::call_and_read_body_json(&app, req).await;
+        assert_eq!(
+            body,
+            serde_json::from_str::<Value>(include_str!("../tests/score.json")).unwrap()
+        );
+    }
 }

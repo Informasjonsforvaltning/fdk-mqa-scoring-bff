@@ -1,0 +1,584 @@
+{
+    "turtle_assessment": "<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#assessmentOf> <https://dataset.foo> .\n<https://dataset.assessment.foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://data.norge.no/vocabulary/dcatno-mqa#DatasetAssessment> .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#hasDistributionAssessment> <https://distribution.assessment.a> .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#hasDistributionAssessment> <https://distribution.assessment.b> .\n<https://dataset.assessment.foo> <http://purl.org/dc/terms/modified> \"2022-03-19 14:02:46 +0000\"^^<http://www.w3.org/2001/XMLSchema#dateTime> .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:ddc5d83adec7b7901304530187673b8 .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:4d359b88f139da85080a229fa3115424 .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:83bd2f522fc36208c014e5c5502f187d .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:9ba87fc079e6b668bfe00344d2e32583 .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:af36442f833d882083690ab527f75055 .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:bc0841a29260de7e8f7b33b39970a2de .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:c74e1f3bb675048d3af967b04b93b6e8 .\n<https://dataset.assessment.foo> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:febb1db6438d921c603ce5cdf8ac4cde .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#assessmentOf> <https://distribution.a> .\n<https://distribution.assessment.a> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://data.norge.no/vocabulary/dcatno-mqa#DistributionAssessment> .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:2d4a1cf55d3ccb78ec57a8376ad3d06e .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:3399c0594a2ad327d3cd850146c8a806 .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:48d3f22d033c69b99268f472cea6abb8 .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:69879d68b2602e7bf557f2369a31f92b .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:a16ba6d18047f2751e73f80611e72ab7 .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:acc2885bbcd8aa4c587e0891a3f5c1be .\n<https://distribution.assessment.a> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:c00840b0f43ec1dcc4b2b894143e771e .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#assessmentOf> <https://distribution.b> .\n<https://distribution.assessment.b> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://data.norge.no/vocabulary/dcatno-mqa#DistributionAssessment> .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:8a773b46e99bfa22767022a33f229a36 .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:8d97d7dd0c9b7681a251aff38da1e1ab .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:aaefe14b5ea525007112662d2bb4a795 .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:b0e61f6339682db98c45d459223afde0 .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:c6787c3c34262584144bb442758ef243 .\n<https://distribution.assessment.b> <https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement> _:d466139e5cd8cc29def9807b15dc137c .\n_:ddc5d83adec7b7901304530187673b8 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:ddc5d83adec7b7901304530187673b8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:ddc5d83adec7b7901304530187673b8 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#contextualityScoring> .\n_:ddc5d83adec7b7901304530187673b8 <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:2d4a1cf55d3ccb78ec57a8376ad3d06e <http://www.w3.org/ns/dqv#value> \"50\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:2d4a1cf55d3ccb78ec57a8376ad3d06e <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:2d4a1cf55d3ccb78ec57a8376ad3d06e <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#scoring> .\n_:2d4a1cf55d3ccb78ec57a8376ad3d06e <http://www.w3.org/ns/dqv#computedOn> <https://distribution.a> .\n_:3399c0594a2ad327d3cd850146c8a806 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:3399c0594a2ad327d3cd850146c8a806 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:3399c0594a2ad327d3cd850146c8a806 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#contextualityScoring> .\n_:3399c0594a2ad327d3cd850146c8a806 <http://www.w3.org/ns/dqv#computedOn> <https://distribution.a> .\n_:48d3f22d033c69b99268f472cea6abb8 <http://www.w3.org/ns/dqv#value> \"200\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:48d3f22d033c69b99268f472cea6abb8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:48d3f22d033c69b99268f472cea6abb8 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode> .\n_:48d3f22d033c69b99268f472cea6abb8 <https://data.norge.no/vocabulary/dcatno-mqa#score> \"50\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:4d359b88f139da85080a229fa3115424 <http://www.w3.org/ns/dqv#value> \"70\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:4d359b88f139da85080a229fa3115424 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:4d359b88f139da85080a229fa3115424 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#accessibilityScoring> .\n_:4d359b88f139da85080a229fa3115424 <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:69879d68b2602e7bf557f2369a31f92b <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:69879d68b2602e7bf557f2369a31f92b <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:69879d68b2602e7bf557f2369a31f92b <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#reusabilityScoring> .\n_:69879d68b2602e7bf557f2369a31f92b <http://www.w3.org/ns/dqv#computedOn> <https://distribution.a> .\n_:83bd2f522fc36208c014e5c5502f187d <http://www.w3.org/ns/dqv#value> \"70\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:83bd2f522fc36208c014e5c5502f187d <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:83bd2f522fc36208c014e5c5502f187d <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#scoring> .\n_:83bd2f522fc36208c014e5c5502f187d <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:8a773b46e99bfa22767022a33f229a36 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:8a773b46e99bfa22767022a33f229a36 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:8a773b46e99bfa22767022a33f229a36 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#reusabilityScoring> .\n_:8a773b46e99bfa22767022a33f229a36 <http://www.w3.org/ns/dqv#computedOn> <https://distribution.b> .\n_:8d97d7dd0c9b7681a251aff38da1e1ab <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:8d97d7dd0c9b7681a251aff38da1e1ab <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:8d97d7dd0c9b7681a251aff38da1e1ab <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#findabilityScoring> .\n_:8d97d7dd0c9b7681a251aff38da1e1ab <http://www.w3.org/ns/dqv#computedOn> <https://distribution.b> .\n_:9ba87fc079e6b668bfe00344d2e32583 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:9ba87fc079e6b668bfe00344d2e32583 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:9ba87fc079e6b668bfe00344d2e32583 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#findabilityScoring> .\n_:9ba87fc079e6b668bfe00344d2e32583 <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:a16ba6d18047f2751e73f80611e72ab7 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:a16ba6d18047f2751e73f80611e72ab7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:a16ba6d18047f2751e73f80611e72ab7 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#findabilityScoring> .\n_:a16ba6d18047f2751e73f80611e72ab7 <http://www.w3.org/ns/dqv#computedOn> <https://distribution.a> .\n_:aaefe14b5ea525007112662d2bb4a795 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:aaefe14b5ea525007112662d2bb4a795 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:aaefe14b5ea525007112662d2bb4a795 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#contextualityScoring> .\n_:aaefe14b5ea525007112662d2bb4a795 <http://www.w3.org/ns/dqv#computedOn> <https://distribution.b> .\n_:acc2885bbcd8aa4c587e0891a3f5c1be <http://www.w3.org/ns/dqv#value> \"50\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:acc2885bbcd8aa4c587e0891a3f5c1be <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:acc2885bbcd8aa4c587e0891a3f5c1be <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#accessibilityScoring> .\n_:acc2885bbcd8aa4c587e0891a3f5c1be <http://www.w3.org/ns/dqv#computedOn> <https://distribution.a> .\n_:af36442f833d882083690ab527f75055 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:af36442f833d882083690ab527f75055 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:af36442f833d882083690ab527f75055 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#interoperabilityScoring> .\n_:af36442f833d882083690ab527f75055 <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:b0e61f6339682db98c45d459223afde0 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:b0e61f6339682db98c45d459223afde0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:b0e61f6339682db98c45d459223afde0 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#interoperabilityScoring> .\n_:b0e61f6339682db98c45d459223afde0 <http://www.w3.org/ns/dqv#computedOn> <https://distribution.b> .\n_:bc0841a29260de7e8f7b33b39970a2de <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:bc0841a29260de7e8f7b33b39970a2de <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode> .\n_:bc0841a29260de7e8f7b33b39970a2de <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:bc0841a29260de7e8f7b33b39970a2de <https://data.norge.no/vocabulary/dcatno-mqa#score> \"50\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:c00840b0f43ec1dcc4b2b894143e771e <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:c00840b0f43ec1dcc4b2b894143e771e <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:c00840b0f43ec1dcc4b2b894143e771e <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#interoperabilityScoring> .\n_:c00840b0f43ec1dcc4b2b894143e771e <http://www.w3.org/ns/dqv#computedOn> <https://distribution.a> .\n_:c6787c3c34262584144bb442758ef243 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:c6787c3c34262584144bb442758ef243 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:c6787c3c34262584144bb442758ef243 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#accessibilityScoring> .\n_:c6787c3c34262584144bb442758ef243 <http://www.w3.org/ns/dqv#computedOn> <https://distribution.b> .\n_:c74e1f3bb675048d3af967b04b93b6e8 <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:c74e1f3bb675048d3af967b04b93b6e8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:c74e1f3bb675048d3af967b04b93b6e8 <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#reusabilityScoring> .\n_:c74e1f3bb675048d3af967b04b93b6e8 <http://www.w3.org/ns/dqv#computedOn> <https://dataset.foo> .\n_:d466139e5cd8cc29def9807b15dc137c <http://www.w3.org/ns/dqv#value> \"0\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n_:d466139e5cd8cc29def9807b15dc137c <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:d466139e5cd8cc29def9807b15dc137c <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#scoring> .\n_:d466139e5cd8cc29def9807b15dc137c <http://www.w3.org/ns/dqv#computedOn> <https://distribution.b> .\n_:febb1db6438d921c603ce5cdf8ac4cde <http://www.w3.org/ns/dqv#value> \"true\"^^<http://www.w3.org/2001/XMLSchema#boolean> .\n_:febb1db6438d921c603ce5cdf8ac4cde <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/ns/dqv#QualityMeasurement> .\n_:febb1db6438d921c603ce5cdf8ac4cde <http://www.w3.org/ns/dqv#isMeasurementOf> <https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlAvailability> .\n_:febb1db6438d921c603ce5cdf8ac4cde <https://data.norge.no/vocabulary/dcatno-mqa#score> \"20\"^^<http://www.w3.org/2001/XMLSchema#integer> .\n",
+    "jsonld_assessment": "[{\"@id\":\"_:acc2885bbcd8aa4c587e0891a3f5c1be\",\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#accessibilityScoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"50\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.a\"}]},{\"@id\":\"_:3399c0594a2ad327d3cd850146c8a806\",\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.a\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#contextualityScoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"]},{\"@id\":\"https://dataset.assessment.foo\",\"https://data.norge.no/vocabulary/dcatno-mqa#hasDistributionAssessment\":[{\"@id\":\"https://distribution.assessment.a\"},{\"@id\":\"https://distribution.assessment.b\"}],\"https://data.norge.no/vocabulary/dcatno-mqa#assessmentOf\":[{\"@id\":\"https://dataset.foo\"}],\"@type\":[\"https://data.norge.no/vocabulary/dcatno-mqa#DatasetAssessment\"],\"http://purl.org/dc/terms/modified\":[{\"@value\":\"2022-03-19 14:02:46 +0000\",\"@type\":\"http://www.w3.org/2001/XMLSchema#dateTime\"}],\"https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement\":[{\"@id\":\"_:4d359b88f139da85080a229fa3115424\"},{\"@id\":\"_:c74e1f3bb675048d3af967b04b93b6e8\"},{\"@id\":\"_:83bd2f522fc36208c014e5c5502f187d\"},{\"@id\":\"_:ddc5d83adec7b7901304530187673b8\"},{\"@id\":\"_:bc0841a29260de7e8f7b33b39970a2de\"},{\"@id\":\"_:febb1db6438d921c603ce5cdf8ac4cde\"},{\"@id\":\"_:9ba87fc079e6b668bfe00344d2e32583\"},{\"@id\":\"_:af36442f833d882083690ab527f75055\"}]},{\"@id\":\"_:4d359b88f139da85080a229fa3115424\",\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#accessibilityScoring\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"70\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"]},{\"@id\":\"_:9ba87fc079e6b668bfe00344d2e32583\",\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#findabilityScoring\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"]},{\"@id\":\"_:c74e1f3bb675048d3af967b04b93b6e8\",\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#reusabilityScoring\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}]},{\"@id\":\"https://distribution.assessment.a\",\"@type\":[\"https://data.norge.no/vocabulary/dcatno-mqa#DistributionAssessment\"],\"https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement\":[{\"@id\":\"_:69879d68b2602e7bf557f2369a31f92b\"},{\"@id\":\"_:acc2885bbcd8aa4c587e0891a3f5c1be\"},{\"@id\":\"_:3399c0594a2ad327d3cd850146c8a806\"},{\"@id\":\"_:48d3f22d033c69b99268f472cea6abb8\"},{\"@id\":\"_:c00840b0f43ec1dcc4b2b894143e771e\"},{\"@id\":\"_:2d4a1cf55d3ccb78ec57a8376ad3d06e\"},{\"@id\":\"_:a16ba6d18047f2751e73f80611e72ab7\"}],\"https://data.norge.no/vocabulary/dcatno-mqa#assessmentOf\":[{\"@id\":\"https://distribution.a\"}]},{\"@id\":\"_:aaefe14b5ea525007112662d2bb4a795\",\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.b\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#contextualityScoring\"}]},{\"@id\":\"_:a16ba6d18047f2751e73f80611e72ab7\",\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.a\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#findabilityScoring\"}]},{\"@id\":\"_:af36442f833d882083690ab527f75055\",\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#interoperabilityScoring\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}]},{\"@id\":\"_:2d4a1cf55d3ccb78ec57a8376ad3d06e\",\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#scoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.a\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"50\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}]},{\"@id\":\"https://distribution.assessment.b\",\"https://data.norge.no/vocabulary/dcatno-mqa#assessmentOf\":[{\"@id\":\"https://distribution.b\"}],\"https://data.norge.no/vocabulary/dcatno-mqa#containsQualityMeasurement\":[{\"@id\":\"_:8d97d7dd0c9b7681a251aff38da1e1ab\"},{\"@id\":\"_:b0e61f6339682db98c45d459223afde0\"},{\"@id\":\"_:d466139e5cd8cc29def9807b15dc137c\"},{\"@id\":\"_:8a773b46e99bfa22767022a33f229a36\"},{\"@id\":\"_:c6787c3c34262584144bb442758ef243\"},{\"@id\":\"_:aaefe14b5ea525007112662d2bb4a795\"}],\"@type\":[\"https://data.norge.no/vocabulary/dcatno-mqa#DistributionAssessment\"]},{\"@id\":\"_:8d97d7dd0c9b7681a251aff38da1e1ab\",\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#findabilityScoring\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.b\"}]},{\"@id\":\"_:c00840b0f43ec1dcc4b2b894143e771e\",\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.a\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#interoperabilityScoring\"}]},{\"@id\":\"_:48d3f22d033c69b99268f472cea6abb8\",\"https://data.norge.no/vocabulary/dcatno-mqa#score\":[{\"@value\":\"50\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"200\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode\"}]},{\"@id\":\"_:b0e61f6339682db98c45d459223afde0\",\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.b\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#interoperabilityScoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"]},{\"@id\":\"_:83bd2f522fc36208c014e5c5502f187d\",\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"70\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#scoring\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}]},{\"@id\":\"_:69879d68b2602e7bf557f2369a31f92b\",\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#reusabilityScoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.a\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}]},{\"@id\":\"_:ddc5d83adec7b7901304530187673b8\",\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#contextualityScoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}]},{\"@id\":\"_:febb1db6438d921c603ce5cdf8ac4cde\",\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"true\",\"@type\":\"http://www.w3.org/2001/XMLSchema#boolean\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlAvailability\"}],\"https://data.norge.no/vocabulary/dcatno-mqa#score\":[{\"@value\":\"20\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"]},{\"@id\":\"_:d466139e5cd8cc29def9807b15dc137c\",\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.b\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#scoring\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}]},{\"@id\":\"_:8a773b46e99bfa22767022a33f229a36\",\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#reusabilityScoring\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.b\"}]},{\"@id\":\"_:c6787c3c34262584144bb442758ef243\",\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://distribution.b\"}],\"http://www.w3.org/ns/dqv#value\":[{\"@value\":\"0\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#accessibilityScoring\"}]},{\"@id\":\"_:bc0841a29260de7e8f7b33b39970a2de\",\"https://data.norge.no/vocabulary/dcatno-mqa#score\":[{\"@value\":\"50\",\"@type\":\"http://www.w3.org/2001/XMLSchema#integer\"}],\"http://www.w3.org/ns/dqv#computedOn\":[{\"@id\":\"https://dataset.foo\"}],\"@type\":[\"http://www.w3.org/ns/dqv#QualityMeasurement\"],\"http://www.w3.org/ns/dqv#isMeasurementOf\":[{\"@id\":\"https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode\"}]}]",
+    "scores": {
+        "dataset": {
+            "id": "https://dataset.foo",
+            "dimensions": [
+                {
+                    "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessibility",
+                    "metrics": [
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode",
+                            "score": 50,
+                            "is_scored": true,
+                            "max_score": 50
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlAvailability",
+                            "score": 20,
+                            "is_scored": true,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlStatusCode",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 30
+                        }
+                    ],
+                    "score": 70,
+                    "max_score": 100
+                },
+                {
+                    "id": "https://data.norge.no/vocabulary/dcatno-mqa#contextuality",
+                    "metrics": [
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#byteSizeAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 5
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#dateIssuedAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 5
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#dateModifiedAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 5
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#rightsAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 5
+                        }
+                    ],
+                    "score": 0,
+                    "max_score": 20
+                },
+                {
+                    "id": "https://data.norge.no/vocabulary/dcatno-mqa#findability",
+                    "metrics": [
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#categoryAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 30
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#keywordAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 30
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#spatialAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#temporalAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        }
+                    ],
+                    "score": 0,
+                    "max_score": 100
+                },
+                {
+                    "id": "https://data.norge.no/vocabulary/dcatno-mqa#interoperability",
+                    "metrics": [
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#dcatApCompliance",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 30
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMatch",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 15
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeMachineInterpretable",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeNonProprietary",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeVocabularyAlignment",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 10
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#mediaTypeAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 10
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#syntaxValid",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 15
+                        }
+                    ],
+                    "score": 0,
+                    "max_score": 140
+                },
+                {
+                    "id": "https://data.norge.no/vocabulary/dcatno-mqa#reusability",
+                    "metrics": [
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessRightsAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 10
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessRightsVocabularyAlignment",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 5
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#contactPointAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#knownLicence",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 10
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#licenceAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 20
+                        },
+                        {
+                            "id": "https://data.norge.no/vocabulary/dcatno-mqa#publisherAvailability",
+                            "score": 0,
+                            "is_scored": false,
+                            "max_score": 10
+                        }
+                    ],
+                    "score": 0,
+                    "max_score": 75
+                }
+            ],
+            "score": 70,
+            "max_score": 435
+        },
+        "distributions": [
+            {
+                "id": "https://distribution.a",
+                "dimensions": [
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessibility",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode",
+                                "score": 50,
+                                "is_scored": true,
+                                "max_score": 50
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlStatusCode",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            }
+                        ],
+                        "score": 50,
+                        "max_score": 100
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#contextuality",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#byteSizeAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#dateIssuedAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#dateModifiedAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#rightsAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 20
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#findability",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#categoryAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#keywordAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#spatialAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#temporalAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 100
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#interoperability",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#dcatApCompliance",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMatch",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 15
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeMachineInterpretable",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeNonProprietary",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeVocabularyAlignment",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#mediaTypeAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#syntaxValid",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 15
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 140
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#reusability",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessRightsAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessRightsVocabularyAlignment",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#contactPointAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#knownLicence",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#licenceAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#publisherAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 75
+                    }
+                ],
+                "score": 50,
+                "max_score": 435
+            },
+            {
+                "id": "https://distribution.b",
+                "dimensions": [
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessibility",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessUrlStatusCode",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 50
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#downloadUrlStatusCode",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 100
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#contextuality",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#byteSizeAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#dateIssuedAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#dateModifiedAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#rightsAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 20
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#findability",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#categoryAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#keywordAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#spatialAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#temporalAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 100
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#interoperability",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#dcatApCompliance",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 30
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMatch",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 15
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeMachineInterpretable",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeNonProprietary",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#formatMediaTypeVocabularyAlignment",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#mediaTypeAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#syntaxValid",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 15
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 140
+                    },
+                    {
+                        "id": "https://data.norge.no/vocabulary/dcatno-mqa#reusability",
+                        "metrics": [
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessRightsAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#accessRightsVocabularyAlignment",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 5
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#contactPointAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#knownLicence",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#licenceAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 20
+                            },
+                            {
+                                "id": "https://data.norge.no/vocabulary/dcatno-mqa#publisherAvailability",
+                                "score": 0,
+                                "is_scored": false,
+                                "max_score": 10
+                            }
+                        ],
+                        "score": 0,
+                        "max_score": 75
+                    }
+                ],
+                "score": 0,
+                "max_score": 435
+            }
+        ]
+    }
+}
