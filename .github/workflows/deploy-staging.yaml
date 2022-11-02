@@ -28,7 +28,7 @@ jobs:
   deploy:
     name: Deploy to staging environment with reusable workflow when test and build is successful
     if: github.event.pull_request.draft == false
-    needs: [test, build]
+    needs: [build]
     uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
     with:
       app_name: fdk-mqa-scoring-api
