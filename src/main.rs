@@ -87,7 +87,7 @@ async fn assessment_graph(
     if accept
         .0
         .iter()
-        .any(|qi| qi.item.to_string() == "application/ld+json")
+        .any(|qi| qi.item == "application/ld+json")
     {
         let graph = conn.jsonld_assessment(uuid)?.ok_or(Error::NotFound(uuid))?;
 
@@ -184,7 +184,7 @@ async fn assessments(
     if accept
         .0
         .iter()
-        .any(|qi| qi.item.to_string() == "application/ld+json")
+        .any(|qi| qi.item == "application/ld+json")
     {
         // TODO: fetch graphs in jsonld format
         let graphs = "";
@@ -223,14 +223,14 @@ fn app() -> App<
     App::new()
         .wrap(cors)
         .app_data(web::PayloadConfig::default().limit(8_388_608))
-        .app_data(web::Data::new(pool.clone()))
+        .app_data(web::Data::new(pool))
         .service(ping)
         .service(ready)
         .service(assessment_graph)
         .service(update_assessment)
         .service(assessments)
         .service(scores)
-        .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", openapi.clone()))
+        .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/openapi.json", openapi))
 }
 
 #[actix_web::main]
