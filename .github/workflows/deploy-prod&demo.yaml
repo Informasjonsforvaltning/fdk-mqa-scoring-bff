@@ -25,7 +25,7 @@ jobs:
 
   deploy:
     name: Deploy to prod environment with reusable workflow when test and build is successful
-    needs: [test, build]
+    needs: [build]
     uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
     with:
       app_name: fdk-mqa-scoring-api
