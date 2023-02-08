@@ -146,6 +146,8 @@ async fn update_assessment(
 
 #[post("/api/scores")]
 async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Responder, Error> {
+    tracing::info!(body = from_utf8(&body)?, "DatasetsRequest");
+
     let data = serde_json::from_str::<DatasetsRequest>(from_utf8(&body)?)?;
     // Check that uris are valid, but disregard parsed value.
     let _parsed_dataset_uris = data
