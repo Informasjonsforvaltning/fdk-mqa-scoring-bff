@@ -1,10 +1,10 @@
 name: Deploy to production & demo
 
 on:
-  push:
+  pull_request:
+    types: [ready_for_review, opened, reopened, synchronize]
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   # test:
