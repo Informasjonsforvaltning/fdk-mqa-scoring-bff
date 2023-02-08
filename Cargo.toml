@@ -7,7 +7,7 @@ edition = "2021"
 actix-cors = "0.6.4"
 actix-web = "4.3.0"
 diesel = { version = "1.4.8", features = ["postgres", "r2d2"] }
-diesel_migrations = { version = "1.4.0", features = ["postgres"] }
+diesel_migrations = { version = "2.0.0", features = ["postgres"] }
 http = "0.2.8"
 lazy_static = "1.4.0"
 mime = "0.3.16"
