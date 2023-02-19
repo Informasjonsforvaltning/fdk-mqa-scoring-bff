@@ -536,7 +536,7 @@ dependencies = [
  "thiserror",
  "tracing",
  "tracing-subscriber",
- "utoipa",
+ "utoipa 3.0.3",
  "utoipa-swagger-ui",
  "uuid",
 ]
@@ -701,6 +701,7 @@ checksum = "1885e79c1fc4b10f0e172c475f458b7f7b93061064d98c3293e98c5ba0c8b399"
 dependencies = [
  "autocfg",
  "hashbrown",
+ "serde",
 ]
 
 [[package]]
@@ -1548,8 +1549,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a0bdc651bbdd526cc02a07dea1dfb49030a1757178c7552185baccd65ef6f741"
 dependencies = [
  "serde",
+ "utoipa-gen 1.1.0",
+]
+
+[[package]]
+name = "utoipa"
+version = "3.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a15f6da6a2b471134ca44b7d18e8a76d73035cf8b3ed24c4dd5ca6a63aa439c5"
+dependencies = [
+ "indexmap",
+ "serde",
  "serde_json",
- "utoipa-gen",
+ "utoipa-gen 3.0.3",
 ]
 
 [[package]]
@@ -1557,6 +1569,18 @@ name = "utoipa-gen"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "36592981d9d4ff5900ec9a09634a9373231324f8a7ba918bb3351b4b2987e4e1"
+dependencies = [
+ "proc-macro-error",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "utoipa-gen"
+version = "3.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f2e33027986a4707b3f5c37ed01b33d0e5a53da30204b52ff18f80600f1d0ec"
 dependencies = [
  "proc-macro-error",
  "proc-macro2",
@@ -1577,7 +1601,7 @@ dependencies = [
  "rust-embed",
  "serde",
  "serde_json",
- "utoipa",
+ "utoipa 1.1.0",
  "zip",
 ]
 
