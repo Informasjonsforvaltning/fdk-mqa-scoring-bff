@@ -13,7 +13,12 @@ use crate::{
     models, schema,
 };
 
-diesel_migrations::embed_migrations!("./migrations");
+pub const MIGRATIONS: diesel_migrations::EmbeddedMigrations = diesel_migrations::embed_migrations!("./migrations");
+type DB = diesel::pg::Pg;
+
+fn run_migration(conn: &mut impl diesel_migrations::MigrationHarness<DB>) {
+    conn.run_pending_migrations(MIGRATIONS).unwrap();
+}
 
 #[derive(thiserror::Error, Debug)]
 pub enum DatabaseError {
@@ -22,11 +27,11 @@ pub enum DatabaseError {
     #[error(transparent)]
     R2d2Error(#[from] r2d2::Error),
     #[error(transparent)]
-    DieselError(#[from] diesel::result::Error),
+    DieselError(#[from] result::Error),
     #[error(transparent)]
     DieselConnectionError(#[from] diesel::ConnectionError),
     #[error(transparent)]
-    DieselMigrationError(#[from] diesel_migrations::RunMigrationsError),
+    DieselMigrationError(#[from] diesel_migrations::MigrationError),
     #[error(transparent)]
     SerdeError(#[from] serde_json::Error),
 }
@@ -50,8 +55,8 @@ fn database_url() -> Result<String, DatabaseError> {
 
 pub fn migrate_database() -> Result<(), DatabaseError> {
     let url = database_url()?;
-    let conn = PgConnection::establish(&url)?;
-    embedded_migrations::run(&conn)?;
+    let mut conn = PgConnection::establish(&url)?;
+    run_migration(&mut conn);
 
     Ok(())
 }
