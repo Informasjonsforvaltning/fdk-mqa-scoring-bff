@@ -245,7 +245,16 @@ async fn main() -> std::io::Result<()> {
     // Fail if API_KEY missing
     let _ = API_KEY.clone();
 
-    HttpServer::new(move || app().wrap(Logger::default()))
+    HttpServer::new(move || app()
+            .wrap(
+                Logger::default()
+                    .exclude("/".to_string())
+                    .exclude("/ping".to_string())
+                    .exclude("/ready".to_string())
+                    .exclude("/metrics".to_string())
+                    .log_target("http"),
+            )
+        )
         .bind(("0.0.0.0", 8082))?
         .run()
         .await
