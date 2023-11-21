@@ -68,7 +68,11 @@ impl PgPool {
     pub fn new() -> Result<Self, DatabaseError> {
         let url = database_url()?;
         let manager = ConnectionManager::new(url);
-        let pool = Pool::builder().test_on_check_out(true).build(manager)?;
+        let pool = Pool::builder()
+            .max_size(5)
+            .test_on_check_out(true)
+            .build(manager)
+            .expect("Could not create a connection pool");
         Ok(PgPool(pool))
     }
 
@@ -80,8 +84,10 @@ impl PgPool {
 pub struct PgConn(PooledConnection<ConnectionManager<PgConnection>>);
 
 impl PgConn {
-    pub fn test_connection(&self) -> Result<(), DatabaseError> {
-        // TODO: test connection
+    pub fn test_connection(&mut self) -> Result<(), DatabaseError> {
+        use schema::dimensions::dsl;
+        
+        let _: i64 = dsl::dimensions.select(diesel::dsl::count(dsl::id)).first(&mut self.0)?;
         Ok(())
     }
 

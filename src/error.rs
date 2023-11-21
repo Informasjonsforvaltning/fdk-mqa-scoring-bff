@@ -21,6 +21,8 @@ pub enum Error {
     Utf8Error(#[from] std::str::Utf8Error),
     #[error(transparent)]
     SerdeJsonError(#[from] serde_json::Error),
+    #[error(transparent)]
+    BlockingError(#[from] actix_web::error::BlockingError),
 }
 
 impl ResponseError for Error {
