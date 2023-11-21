@@ -18,6 +18,6 @@ serde_yaml = "0.9.27"
 thiserror = "1.0.50"
 tracing = "0.1.40"
 tracing-subscriber =  { version = "0.3.17", features = ["json"] }
-utoipa = "4.0.0"
+utoipa = "4.1.0"
 utoipa-swagger-ui = { version = "4.0.0", features = ["actix-web"] }
 uuid = { version = "1.5.0", features = ["v4"] }
