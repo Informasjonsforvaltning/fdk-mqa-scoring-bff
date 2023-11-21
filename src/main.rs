@@ -24,10 +24,10 @@ use utoipa_swagger_ui::SwaggerUi;
 use uuid::Uuid;
 
 use crate::{
-    database::PgPool,
+    database::{PgPool, DatabaseError},
     db_models::{DatasetAssessment, Dimension},
     error::Error,
-    models::DatasetsRequest,
+    models::{DatasetsRequest, DatasetsScores},
 };
 
 mod database;
@@ -65,9 +65,22 @@ fn validate_api_key(request: HttpRequest) -> Result<(), Error> {
 
 #[get("/ping")]
 async fn ping(pool: web::Data<PgPool>) -> Result<impl Responder, Error> {
-    let conn = pool.get()?;
-    conn.test_connection()?;
-    Ok("pong")
+
+    let result = web::block(move || {
+        // Obtaining a connection from the pool is also a potentially blocking operation.
+        // So, it should be called within the `web::block` closure, as well.
+        let mut conn = pool.get()?;
+        conn.test_connection()
+    })
+    .await
+    .map_err(|e| {
+        Error::BlockingError(e.into())
+    })?;
+
+    match result {
+        Ok(_) => Ok("pong"),
+        Err(e) => Err(e.into()),
+    }
 }
 
 #[get("/ready")]
@@ -82,24 +95,33 @@ async fn assessment_graph(
     pool: web::Data<PgPool>,
 ) -> Result<impl Responder, Error> {
     let uuid = parse_uuid(id.into_inner())?;
-    let mut conn = pool.get()?;
-
-    if accept
+    let accept_json_ld = accept
         .0
         .iter()
-        .any(|qi| qi.item.to_string() == "application/ld+json")
-    {
-        let graph = conn.jsonld_assessment(uuid)?.ok_or(Error::NotFound(uuid))?;
+        .any(|qi| qi.item.to_string() == "application/ld+json");
 
-        Ok(HttpResponse::Ok()
-            .content_type("application/ld+json")
-            .message_body(graph))
-    } else {
-        let graph = conn.turtle_assessment(uuid)?.ok_or(Error::NotFound(uuid))?;
-
-        Ok(HttpResponse::Ok()
-            .content_type("text/turtle")
-            .message_body(graph))
+    let result = web::block(move || {
+        // Obtaining a connection from the pool is also a potentially blocking operation.
+        // So, it should be called within the `web::block` closure, as well.
+        let mut conn = pool.get()?;
+        if accept_json_ld
+        {
+            conn.jsonld_assessment(uuid)?.ok_or(Error::NotFound(uuid))
+            
+        } else {
+            conn.turtle_assessment(uuid)?.ok_or(Error::NotFound(uuid))
+        }
+    })
+    .await
+    .map_err(|e| {
+        Error::BlockingError(e.into())
+    })?;
+    
+    match result {
+        Ok(graph) => Ok(HttpResponse::Ok()
+            .content_type(if accept_json_ld { "application/ld+json" } else { "text/turtle" })
+            .message_body(graph)),
+        Err(e) => Err(e.into()),
     }
 }
 
@@ -115,33 +137,44 @@ async fn update_assessment(
     let update: models::ScorePostRequest = serde_json::from_str(from_utf8(&body)?)?;
     let dataset_uri = update.scores.as_ref().dataset.id.clone();
 
-    let mut conn = pool.get()?;
+    let result: Result<(), DatabaseError> = web::block(move || {
+        // Obtaining a connection from the pool is also a potentially blocking operation.
+        // So, it should be called within the `web::block` closure, as well.
+        let mut conn = pool.get()?;
 
-    let assessment = DatasetAssessment {
-        id: uuid.to_string(),
-        dataset_uri: dataset_uri.clone(),
-        turtle_assessment: update.turtle_assessment.clone(),
-        jsonld_assessment: update.jsonld_assessment.clone(),
-        json_score: serde_json::to_string(&update.scores)?,
-    };
-
-    // TODO: use web::block(move || {}) for db operations
-
-    conn.drop_dataset_dimensions(&dataset_uri)?;
-    conn.store_dataset(assessment)?;
-
-    for dimension in &update.scores.dataset.dimensions {
-        conn.store_dimension(Dimension {
+        let assessment = DatasetAssessment {
+            id: uuid.to_string(),
             dataset_uri: dataset_uri.clone(),
-            id: dimension.id.clone(),
-            score: dimension.score as i32,
-            max_score: dimension.max_score as i32,
-        })?;
-    }
+            turtle_assessment: update.turtle_assessment.clone(),
+            jsonld_assessment: update.jsonld_assessment.clone(),
+            json_score: serde_json::to_string(&update.scores)?,
+        };
 
-    Ok(HttpResponse::Accepted()
-        .content_type(mime::APPLICATION_JSON)
-        .message_body(""))
+        conn.drop_dataset_dimensions(&dataset_uri)?;
+        conn.store_dataset(assessment)?;
+
+        for dimension in &update.scores.dataset.dimensions {
+            conn.store_dimension(Dimension {
+                dataset_uri: dataset_uri.clone(),
+                id: dimension.id.clone(),
+                score: dimension.score as i32,
+                max_score: dimension.max_score as i32,
+            })?;
+        }
+
+        Ok(())
+    })
+    .await
+    .map_err(|e| {
+        Error::BlockingError(e.into())
+    })?;
+
+    match result {
+        Ok(_) => Ok(HttpResponse::Accepted()
+            .content_type(mime::APPLICATION_JSON)
+            .message_body("")),
+        Err(e) => Err(e.into()),
+    }    
 }
 
 #[post("/api/scores")]
@@ -153,16 +186,28 @@ async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Respon
         .iter()
         .map(|uri| uri.parse::<Uri>())
         .collect::<Result<Vec<Uri>, InvalidUri>>()?;
-    let mut conn = pool.get()?;
 
-    let response = models::DatasetsScores {
-        scores: conn.json_scores(&data.datasets)?,
-        aggregations: conn.dimension_aggregates(&data.datasets)?,
-    };
+    let result: Result<DatasetsScores, DatabaseError> = web::block(move || {
+        // Obtaining a connection from the pool is also a potentially blocking operation.
+        // So, it should be called within the `web::block` closure, as well.
+        let mut conn = pool.get()?;
 
-    Ok(HttpResponse::Ok()
-        .content_type(mime::APPLICATION_JSON)
-        .message_body(serde_json::to_string(&response)?))
+        Ok(models::DatasetsScores {
+            scores: conn.json_scores(&data.datasets)?,
+            aggregations: conn.dimension_aggregates(&data.datasets)?,
+        })
+    })
+    .await
+    .map_err(|e| {
+        Error::BlockingError(e.into())
+    })?;
+
+    match result {
+        Ok(scores) => Ok(HttpResponse::Ok()
+            .content_type(mime::APPLICATION_JSON)
+            .message_body(serde_json::to_string(&scores)?)),
+        Err(e) => Err(e.into()),
+    }    
 }
 
 #[post("/api/assessments")]
@@ -178,28 +223,36 @@ async fn assessments(
         .iter()
         .map(|uri| uri.parse::<Uri>())
         .collect::<Result<Vec<Uri>, InvalidUri>>()?;
-
-    let mut _conn = pool.get()?;
-
-    if accept
+    let accept_json_ld = accept
         .0
         .iter()
-        .any(|qi| qi.item.to_string() == "application/ld+json")
-    {
-        // TODO: fetch graphs in jsonld format
-        let graphs = "";
+        .any(|qi| qi.item.to_string() == "application/ld+json");
 
-        Ok(HttpResponse::Ok()
-            .content_type("application/ld+json")
-            .message_body(graphs))
-    } else {
-        // TODO: fetch graphs in turtle format
-        let graphs = "";
+    let result: Result<String, DatabaseError> = web::block(move || {
+        // Obtaining a connection from the pool is also a potentially blocking operation.
+        // So, it should be called within the `web::block` closure, as well.
+        let mut _conn = pool.get()?;
+        
+        if accept_json_ld
+        {
+            // TODO: fetch graphs in jsonld format
+            Ok("".to_string())
+        } else {
+            // TODO: fetch graphs in turtle format
+            Ok("".to_string())
+        }
+    })
+    .await
+    .map_err(|e| {
+        Error::BlockingError(e.into())
+    })?;
 
-        Ok(HttpResponse::Ok()
-            .content_type("text/turtle")
-            .message_body(graphs))
-    }
+    match result {
+        Ok(graph) => Ok(HttpResponse::Ok()
+            .content_type(if accept_json_ld { "application/ld+json" } else { "text/turtle" })
+            .message_body(graph)),
+        Err(e) => Err(e.into()),
+    }    
 }
 
 fn app() -> App<
