@@ -69,7 +69,7 @@ impl PgPool {
         let url = database_url()?;
         let manager = ConnectionManager::new(url);
         let pool = Pool::builder()
-            .max_size(5)
+            .max_size(2)
             .test_on_check_out(true)
             .build(manager)
             .expect("Could not create a connection pool");
