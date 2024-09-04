@@ -1,5 +1,5 @@
 ---
-version: '2'
+version: '3.8'
 services:
   postgres:
     image: postgres
@@ -9,7 +9,5 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=mqa
     healthcheck:
-      test:
-        - CMD-SHELL
-        - runuser -u postgres -- psql -c "\l" | grep mqa
+      test: runuser -u postgres -- psql -c "\l" | grep mqa
       interval: 3s
