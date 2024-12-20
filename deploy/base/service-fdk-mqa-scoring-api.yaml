@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    fdk.service: fdk-mqa-scoring-api
+  name: fdk-mqa-scoring-api
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 8082
+    targetPort: 8082
+  selector:
+    fdk.service: fdk-mqa-scoring-api
