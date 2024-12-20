@@ -21,12 +21,11 @@ jobs:
       environment: prod
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
 
   deploy:
     name: Deploy to prod environment with reusable workflow when test and build is successful
     needs: [build]
-    uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
+    uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-mqa-scoring-api
       environment: prod
@@ -39,7 +38,7 @@ jobs:
   deploy_demo:
     name: Deploy to demo environment with reusable workflow when prod deploy is successful
     needs: [deploy]
-    uses: Informasjonsforvaltning/workflows/.github/workflows/deploy.yaml@main
+    uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-mqa-scoring-api
       environment: demo

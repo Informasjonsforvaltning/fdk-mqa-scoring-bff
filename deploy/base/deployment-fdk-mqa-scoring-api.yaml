@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fdk-mqa-scoring-api
+  labels:
+    app: fdk-mqa-scoring-api
+    fdk.service: fdk-mqa-scoring-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      fdk.service: fdk-mqa-scoring-api
+  strategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: fdk-mqa-scoring-api
+        fdk.service: fdk-mqa-scoring-api
+      annotations:
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+        - name: fdk-mqa-scoring-api
+          image: fdk-mqa-scoring-api
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8082
+          resources:
+            requests:
+              memory: "1400Mi"
+              cpu: "10m"
+            limits:
+              memory: "1400Mi"
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8082
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: 8082
+      restartPolicy: Always
