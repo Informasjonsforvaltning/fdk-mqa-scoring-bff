@@ -314,8 +314,10 @@ fn parse_uuid(uuid: String) -> Result<Uuid, Error> {
 
 #[cfg(test)]
 mod tests {
-    use actix_web::{http::header::ContentType, test};
-    use http::StatusCode;
+    use actix_web::{http::{
+        header::ContentType,
+        StatusCode,
+    }, test};
     use serde_json::Value;
     use uuid::Uuid;
 
