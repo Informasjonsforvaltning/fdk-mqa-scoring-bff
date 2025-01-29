@@ -2,17 +2,17 @@ name: Deploy to staging
 
 on:
   pull_request:
-    types: [ready_for_review, opened, reopened, synchronize]
+    types: [ ready_for_review, opened, reopened, synchronize ]
     branches:
       - main
 
 jobs:
-  # test:
-  #   name: Run tests when pull request is created
-  #   if: github.event.pull_request.draft == false
-  #   uses: Informasjonsforvaltning/workflows/.github/workflows/test-rust.yaml@main
-  #   secrets:
-  #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  test:
+    name: Run tests when pull request is created
+    if: github.event.pull_request.draft == false
+    uses: Informasjonsforvaltning/workflows/.github/workflows/test-rust.yaml@main
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     name: Build with reusable workflow when pull request is created
@@ -27,7 +27,7 @@ jobs:
   deploy:
     name: Deploy to staging environment with reusable workflow when test and build is successful
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
-    needs: [build]
+    needs: [ build ]
     uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-mqa-scoring-api
