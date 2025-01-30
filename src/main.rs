@@ -1,9 +1,9 @@
 #[macro_use]
-extern crate serde;
-#[macro_use]
 extern crate diesel;
 #[macro_use]
 extern crate diesel_migrations;
+#[macro_use]
+extern crate serde;
 
 use std::{env, str::from_utf8};
 
@@ -24,7 +24,7 @@ use utoipa_swagger_ui::SwaggerUi;
 use uuid::Uuid;
 
 use crate::{
-    database::{PgPool, DatabaseError},
+    database::{DatabaseError, PgPool},
     db_models::{DatasetAssessment, Dimension},
     error::Error,
     models::{DatasetsRequest, DatasetsScores},
@@ -46,6 +46,13 @@ lazy_static! {
         tracing::error!(error = e.to_string().as_str(), "ENVIRONMENT not found");
         std::process::exit(1)
     });
+    static ref ALLOWED_ORIGINS: String = env::var("CORS_ORIGIN_PATTERNS").unwrap_or_else(|e| {
+        tracing::error!(
+            error = e.to_string().as_str(),
+            "CORS_ORIGIN_PATTERNS not found"
+        );
+        std::process::exit(1)
+    });
 }
 
 fn validate_api_key(request: HttpRequest) -> Result<(), Error> {
@@ -65,7 +72,6 @@ fn validate_api_key(request: HttpRequest) -> Result<(), Error> {
 
 #[get("/ping")]
 async fn ping(pool: web::Data<PgPool>) -> Result<impl Responder, Error> {
-
     let result = web::block(move || {
         // Obtaining a connection from the pool is also a potentially blocking operation.
         // So, it should be called within the `web::block` closure, as well.
@@ -73,9 +79,7 @@ async fn ping(pool: web::Data<PgPool>) -> Result<impl Responder, Error> {
         conn.test_connection()
     })
     .await
-    .map_err(|e| {
-        Error::BlockingError(e.into())
-    })?;
+    .map_err(|e| Error::BlockingError(e.into()))?;
 
     match result {
         Ok(_) => Ok("pong"),
@@ -104,22 +108,22 @@ async fn assessment_graph(
         // Obtaining a connection from the pool is also a potentially blocking operation.
         // So, it should be called within the `web::block` closure, as well.
         let mut conn = pool.get()?;
-        if accept_json_ld
-        {
+        if accept_json_ld {
             conn.jsonld_assessment(uuid)?.ok_or(Error::NotFound(uuid))
-            
         } else {
             conn.turtle_assessment(uuid)?.ok_or(Error::NotFound(uuid))
         }
     })
     .await
-    .map_err(|e| {
-        Error::BlockingError(e.into())
-    })?;
-    
+    .map_err(|e| Error::BlockingError(e.into()))?;
+
     match result {
         Ok(graph) => Ok(HttpResponse::Ok()
-            .content_type(if accept_json_ld { "application/ld+json" } else { "text/turtle" })
+            .content_type(if accept_json_ld {
+                "application/ld+json"
+            } else {
+                "text/turtle"
+            })
             .message_body(graph)),
         Err(e) => Err(e.into()),
     }
@@ -165,16 +169,14 @@ async fn update_assessment(
         Ok(())
     })
     .await
-    .map_err(|e| {
-        Error::BlockingError(e.into())
-    })?;
+    .map_err(|e| Error::BlockingError(e.into()))?;
 
     match result {
         Ok(_) => Ok(HttpResponse::Accepted()
             .content_type(mime::APPLICATION_JSON)
             .message_body("")),
         Err(e) => Err(e.into()),
-    }    
+    }
 }
 
 #[post("/api/scores")]
@@ -198,16 +200,14 @@ async fn scores(pool: web::Data<PgPool>, body: web::Bytes) -> Result<impl Respon
         })
     })
     .await
-    .map_err(|e| {
-        Error::BlockingError(e.into())
-    })?;
+    .map_err(|e| Error::BlockingError(e.into()))?;
 
     match result {
         Ok(scores) => Ok(HttpResponse::Ok()
             .content_type(mime::APPLICATION_JSON)
             .message_body(serde_json::to_string(&scores)?)),
         Err(e) => Err(e.into()),
-    }    
+    }
 }
 
 #[post("/api/assessments")]
@@ -232,9 +232,8 @@ async fn assessments(
         // Obtaining a connection from the pool is also a potentially blocking operation.
         // So, it should be called within the `web::block` closure, as well.
         let mut _conn = pool.get()?;
-        
-        if accept_json_ld
-        {
+
+        if accept_json_ld {
             // TODO: fetch graphs in jsonld format
             Ok("".to_string())
         } else {
@@ -243,16 +242,52 @@ async fn assessments(
         }
     })
     .await
-    .map_err(|e| {
-        Error::BlockingError(e.into())
-    })?;
+    .map_err(|e| Error::BlockingError(e.into()))?;
 
     match result {
         Ok(graph) => Ok(HttpResponse::Ok()
-            .content_type(if accept_json_ld { "application/ld+json" } else { "text/turtle" })
+            .content_type(if accept_json_ld {
+                "application/ld+json"
+            } else {
+                "text/turtle"
+            })
             .message_body(graph)),
         Err(e) => Err(e.into()),
-    }    
+    }
+}
+
+fn cors() -> Cors {
+    let origins: Vec<String> = ALLOWED_ORIGINS
+        .split(',')
+        .map(|s| s.trim().to_string())
+        .collect();
+
+    Cors::default()
+        .allowed_origin_fn(move |origin, _req_head| {
+            let origin_str = origin.to_str().unwrap_or_default();
+
+            for allowed in &origins {
+                if allowed == origin_str {
+                    return true;
+                }
+
+                if allowed.starts_with("*.")
+                    && origin_str.ends_with(allowed.trim_start_matches('*'))
+                {
+                    return true;
+                }
+
+                if allowed.ends_with(":*") && origin_str.starts_with(allowed.trim_end_matches(":*"))
+                {
+                    return true;
+                }
+            }
+
+            false
+        })
+        .allowed_methods(["GET", "POST"])
+        .allow_any_header()
+        .max_age(3600)
 }
 
 fn app() -> App<
@@ -267,14 +302,9 @@ fn app() -> App<
     let pool = PgPool::new().unwrap();
 
     let openapi = serde_yaml::from_str::<OpenApi>(include_str!("../openapi.yaml")).unwrap();
-    let cors = Cors::default()
-        .allow_any_method()
-        .allow_any_header()
-        .allow_any_origin()
-        .max_age(3600);
 
     App::new()
-        .wrap(cors)
+        .wrap(cors())
         .app_data(web::PayloadConfig::default().limit(8_388_608))
         .app_data(web::Data::new(pool.clone()))
         .service(ping)
@@ -314,19 +344,25 @@ fn parse_uuid(uuid: String) -> Result<Uuid, Error> {
 
 #[cfg(test)]
 mod tests {
-    use actix_web::{http::{
-        header::ContentType,
-        StatusCode,
-    }, test};
+    use super::*;
+    use actix_web::{
+        http::{header::ContentType, header::HeaderValue, StatusCode},
+        test,
+    };
+    use dotenvy::from_filename;
     use serde_json::Value;
     use uuid::Uuid;
 
-    use super::*;
-
     async fn test_get_ok(path: &str) {
+        match from_filename(".env.test") {
+            Ok(_) => println!("Successfully loaded .env.test"),
+            Err(err) => println!("Error loading .env.test: {}", err),
+        }
+
         let app = test::init_service(app()).await;
         let req = test::TestRequest::get()
             .insert_header(ContentType::plaintext())
+            .insert_header(("Origin", "http://localhost:8080"))
             .uri(path)
             .to_request();
         let resp = test::call_service(&app, req).await;
@@ -345,6 +381,11 @@ mod tests {
 
     #[actix_web::test]
     async fn test_404() {
+        match from_filename(".env.test") {
+            Ok(_) => println!("Successfully loaded .env.test"),
+            Err(err) => println!("Error loading .env.test: {}", err),
+        }
+
         let uuid = Uuid::parse_str("02f09a3f-1624-3b1d-1337-44eff7708208").unwrap();
         let path = format!("/api/assessments/{}", uuid);
 
@@ -352,6 +393,7 @@ mod tests {
 
         let req = test::TestRequest::get()
             .insert_header(ContentType::plaintext())
+            .insert_header(("Origin", "http://localhost:8080"))
             .uri(&path)
             .to_request();
         let resp = test::call_service(&app, req).await;
@@ -359,7 +401,68 @@ mod tests {
     }
 
     #[actix_web::test]
+    async fn test_cors_allowed_origins() {
+        match from_filename(".env.test") {
+            Ok(_) => println!("Successfully loaded .env.test"),
+            Err(err) => println!("Error loading .env.test: {}", err),
+        }
+
+        let app = test::init_service(app()).await;
+
+        let origins = [
+            "https://example.com",
+            "https://api.example.com",
+            "http://localhost:8080",
+            "http://localhost:8081",
+        ];
+
+        for origin in &origins {
+            let req = test::TestRequest::get()
+                .insert_header(("Origin", *origin))
+                .uri("/ready")
+                .to_request();
+
+            let resp = test::call_service(&app, req).await;
+
+            assert_eq!(resp.status(), StatusCode::OK);
+            assert!(resp.headers().contains_key("access-control-allow-origin"));
+
+            let cors_header = resp.headers().get("access-control-allow-origin").unwrap();
+            assert_eq!(cors_header, HeaderValue::from_str(origin).unwrap());
+        }
+    }
+
+    #[actix_web::test]
+    async fn test_cors_disallowed_origins() {
+        match from_filename(".env.test") {
+            Ok(_) => println!("Successfully loaded .env.test"),
+            Err(err) => println!("Error loading .env.test: {}", err),
+        }
+
+        let app = test::init_service(app()).await;
+
+        let origins = ["https://exxxample.com"];
+
+        for origin in &origins {
+            let req = test::TestRequest::get()
+                .insert_header(("Origin", *origin))
+                .uri("/ready")
+                .to_request();
+
+            let resp = test::call_service(&app, req).await;
+
+            assert_eq!(resp.status(), StatusCode::OK);
+            assert!(!resp.headers().contains_key("access-control-allow-origin"),);
+        }
+    }
+
+    #[actix_web::test]
     async fn test_post_and_get_scores() {
+        match from_filename(".env.test") {
+            Ok(_) => println!("Successfully loaded .env.test"),
+            Err(err) => println!("Error loading .env.test: {}", err),
+        }
+
         let uuid = Uuid::parse_str("02f09a3f-1624-3b1d-8409-44eff7708208").unwrap();
         let path = format!("/api/assessments/{}", uuid);
 
@@ -367,6 +470,7 @@ mod tests {
 
         let req = test::TestRequest::post()
             .insert_header(ContentType::json())
+            .insert_header(("Origin", "http://localhost:8080"))
             .set_json(include_str!("../tests/post.json"))
             .uri(&path)
             .to_request();
@@ -377,6 +481,7 @@ mod tests {
         let req = test::TestRequest::post()
             .insert_header(ContentType::json())
             .insert_header(("X-API-KEY", "bar"))
+            .insert_header(("Origin", "http://localhost:8080"))
             .set_json(include_str!("../tests/post.json"))
             .uri(&path)
             .to_request();
@@ -387,6 +492,7 @@ mod tests {
         let req = test::TestRequest::post()
             .insert_header(ContentType::json())
             .insert_header(("X-API-KEY", "foo"))
+            .insert_header(("Origin", "http://localhost:8080"))
             .set_json(serde_json::from_str::<Value>(include_str!("../tests/post.json")).unwrap())
             .uri(&path)
             .to_request();
@@ -394,7 +500,9 @@ mod tests {
         //println!("{:?}", resp.response().body());
         assert!(resp.status().is_success());
 
-        let req = test::TestRequest::get().uri(&path).to_request();
+        let req = test::TestRequest::get()
+            .insert_header(("Origin", "http://localhost:8080"))
+            .uri(&path).to_request();
         let bytes = test::call_and_read_body(&app, req).await;
         assert_eq!(
             String::from_utf8(bytes.to_vec()).unwrap(),
@@ -403,6 +511,7 @@ mod tests {
 
         let req = test::TestRequest::post()
             .insert_header(ContentType::json())
+            .insert_header(("Origin", "http://localhost:8080"))
             .set_json(
                 serde_json::from_str::<Value>(
                     r#"{

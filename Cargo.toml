@@ -21,3 +21,6 @@ tracing-subscriber =  { version = "0.3.19", features = ["json", "env-filter", "t
 utoipa = "5.3.0"
 utoipa-swagger-ui = { version = "8.1.0", features = ["actix-web"] }
 uuid = { version = "1.11.0", features = ["v4"] }
+
+[dev-dependencies]
+dotenvy = "0.15.7"
